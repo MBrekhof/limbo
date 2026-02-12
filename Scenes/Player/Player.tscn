@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://bplayer0scene"]
+[gd_scene load_steps=7 format=3 uid="uid://bplayer0scene"]
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1_ctrl"]
 [ext_resource type="Script" path="res://Scripts/Player/PlayerCamera.cs" id="2_cam"]
 [ext_resource type="Script" path="res://Scripts/Player/RespawnManager.cs" id="3_resp"]
+[ext_resource type="Script" path="res://Scripts/Player/PlayerAnimator.cs" id="4_anim"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(24, 56)
@@ -18,12 +19,8 @@ script = ExtResource("1_ctrl")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_body")
 
-[node name="Sprite" type="ColorRect" parent="."]
-offset_left = -12.0
-offset_top = -28.0
-offset_right = 12.0
-offset_bottom = 28.0
-color = Color(0, 0, 0, 1)
+[node name="Animator" type="Node2D" parent="."]
+script = ExtResource("4_anim")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = true

@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dxd58v46y6532"]
+[gd_scene load_steps=22 format=3 uid="uid://dxd58v46y6532"]
 
 [ext_resource type="PackedScene" path="res://Scenes/Puzzles/PushableBox.tscn" id="box_1"]
 [ext_resource type="PackedScene" path="res://Scenes/Puzzles/Checkpoint.tscn" id="checkpoint_1"]
@@ -32,6 +32,28 @@ size = Vector2(800, 200)
 [sub_resource type="RectangleShape2D" id="transition_shape"]
 size = Vector2(32, 128)
 
+[sub_resource type="Gradient" id="light_grad"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="light_tex"]
+gradient = SubResource("light_grad")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground1"]
+polygon = PackedVector2Array(-300, -100, 300, -100, 300, 100, -300, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground2"]
+polygon = PackedVector2Array(-325, -100, 325, -100, 325, 100, -325, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground3"]
+polygon = PackedVector2Array(-400, -100, 400, -100, 400, 100, -400, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground5"]
+polygon = PackedVector2Array(-400, -100, 400, -100, 400, 100, -400, 100)
+
 [node name="Level01_Forest" type="Node2D" unique_id=1194611572]
 
 [node name="Environment" parent="." unique_id=805944322 instance=ExtResource("env_1")]
@@ -51,12 +73,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Ground1" unique_id=2120964963]
 shape = SubResource("ground1_shape")
 
-[node name="Visual" type="ColorRect" parent="Ground1" unique_id=599726608]
-offset_left = -300.0
-offset_top = -100.0
-offset_right = 300.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="Ground1"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-300, -100, -280, -108, -255, -96, -230, -106, -205, -93, -180, -104, -155, -97, -128, -111, -100, -95, -75, -107, -50, -98, -22, -109, 5, -94, 30, -103, 58, -97, 85, -112, 110, -96, 138, -105, 165, -99, 192, -108, 220, -95, 248, -106, 275, -100, 300, -103, 300, 100, -300, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="Ground1"]
+occluder = SubResource("occluder_ground1")
 
 [node name="Ground2" type="StaticBody2D" parent="." unique_id=2035652970]
 position = Vector2(1075, 600)
@@ -65,12 +87,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Ground2" unique_id=60232183]
 shape = SubResource("ground2_shape")
 
-[node name="Visual" type="ColorRect" parent="Ground2" unique_id=972752506]
-offset_left = -325.0
-offset_top = -100.0
-offset_right = 325.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="Ground2"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-325, -100, -300, -109, -272, -95, -245, -107, -218, -98, -190, -112, -162, -94, -135, -105, -108, -99, -80, -110, -52, -96, -25, -103, 2, -97, 30, -108, 58, -95, 85, -106, 112, -100, 140, -111, 168, -94, 195, -107, 222, -98, 250, -105, 278, -96, 305, -109, 325, -100, 325, 100, -325, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="Ground2"]
+occluder = SubResource("occluder_ground2")
 
 [node name="Checkpoint1" parent="." unique_id=1740769618 instance=ExtResource("checkpoint_1")]
 position = Vector2(900, 470)
@@ -82,12 +104,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Ground3" unique_id=1299668583]
 shape = SubResource("ground3_shape")
 
-[node name="Visual" type="ColorRect" parent="Ground3" unique_id=1030837731]
-offset_left = -400.0
-offset_top = -100.0
-offset_right = 400.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="Ground3"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-400, -100, -375, -110, -348, -96, -320, -107, -292, -94, -265, -108, -238, -97, -210, -113, -182, -95, -155, -104, -128, -99, -100, -111, -72, -93, -45, -106, -18, -98, 10, -109, 38, -95, 65, -105, 92, -100, 120, -112, 148, -94, 175, -107, 202, -98, 230, -104, 258, -96, 285, -110, 312, -97, 340, -108, 368, -95, 400, -102, 400, 100, -400, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="Ground3"]
+occluder = SubResource("occluder_ground3")
 
 [node name="Step1" type="StaticBody2D" parent="." unique_id=390108045]
 position = Vector2(1450, 475)
@@ -96,12 +118,9 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Step1" unique_id=829580878]
 shape = SubResource("step_shape")
 
-[node name="Visual" type="ColorRect" parent="Step1" unique_id=1519317936]
-offset_left = -50.0
-offset_top = -25.0
-offset_right = 50.0
-offset_bottom = 25.0
+[node name="Visual" type="Polygon2D" parent="Step1"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-50, -25, -38, -30, -25, -23, -12, -28, 0, -25, 12, -31, 25, -24, 38, -29, 50, -25, 50, 25, -50, 25)
 
 [node name="PushableBox1" parent="." unique_id=1282258060 instance=ExtResource("box_1")]
 position = Vector2(1500, 418)
@@ -123,12 +142,9 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Ground4" unique_id=770736868]
 shape = SubResource("ground4_shape")
 
-[node name="Visual" type="ColorRect" parent="Ground4" unique_id=1726942692]
-offset_left = -200.0
-offset_top = -100.0
-offset_right = 200.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="Ground4"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-200, -100, -178, -109, -155, -95, -132, -106, -110, -98, -88, -112, -65, -94, -42, -105, -20, -99, 2, -108, 25, -95, 48, -104, 70, -100, 92, -110, 115, -96, 138, -107, 160, -98, 182, -105, 200, -100, 200, 100, -200, 100)
 
 [node name="Checkpoint2" parent="." unique_id=1991023846 instance=ExtResource("checkpoint_1")]
 position = Vector2(2700, 470)
@@ -140,12 +156,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Ground5" unique_id=284226618]
 shape = SubResource("ground5_shape")
 
-[node name="Visual" type="ColorRect" parent="Ground5" unique_id=880255151]
-offset_left = -400.0
-offset_top = -100.0
-offset_right = 400.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="Ground5"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-400, -100, -375, -108, -350, -96, -322, -110, -295, -94, -268, -105, -240, -98, -212, -113, -185, -95, -158, -106, -130, -100, -102, -109, -75, -93, -48, -107, -20, -97, 8, -111, 35, -95, 62, -104, 90, -99, 118, -108, 145, -94, 172, -106, 200, -100, 228, -112, 255, -96, 282, -105, 310, -98, 338, -110, 365, -95, 400, -103, 400, 100, -400, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="Ground5"]
+occluder = SubResource("occluder_ground5")
 
 [node name="LevelTransition" type="Area2D" parent="." unique_id=2003424603]
 position = Vector2(3480, 450)
@@ -157,3 +173,111 @@ NextLevelPath = "res://Scenes/Levels/Level02_Industrial.tscn"
 
 [node name="CollisionShape" type="CollisionShape2D" parent="LevelTransition" unique_id=407893369]
 shape = SubResource("transition_shape")
+
+;; --- Atmospheric Point Lights ---
+
+[node name="Moonlight" type="PointLight2D" parent="."]
+position = Vector2(300, 100)
+color = Color(0.8, 0.85, 0.95, 1)
+energy = 0.6
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 6.0
+
+[node name="GapLight" type="PointLight2D" parent="."]
+position = Vector2(675, 300)
+color = Color(0.7, 0.75, 0.8, 1)
+energy = 0.3
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 3.0
+
+[node name="CheckpointGlow" type="PointLight2D" parent="."]
+position = Vector2(900, 400)
+color = Color(0.9, 0.85, 0.7, 1)
+energy = 0.25
+texture = SubResource("light_tex")
+texture_scale = 2.0
+
+[node name="PuzzleLight" type="PointLight2D" parent="."]
+position = Vector2(1700, 250)
+color = Color(0.7, 0.7, 0.8, 1)
+energy = 0.4
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 4.0
+
+[node name="SpikePitWarning" type="PointLight2D" parent="."]
+position = Vector2(2300, 350)
+color = Color(0.9, 0.5, 0.4, 1)
+energy = 0.3
+texture = SubResource("light_tex")
+texture_scale = 2.5
+
+[node name="EndAreaLight" type="PointLight2D" parent="."]
+position = Vector2(3100, 200)
+color = Color(0.75, 0.8, 0.9, 1)
+energy = 0.5
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 5.0
+
+;; --- Forest Decorations: Hanging Branches ---
+
+[node name="HangingBranch1" type="Polygon2D" parent="."]
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(150, -200, 155, -180, 148, -155, 158, -128, 152, -100, 160, -72, 155, -45, 163, -18, 158, 10, 168, 38, 162, 65, 172, 90, 175, 100, 170, 95, 160, 68, 155, 40, 148, 12, 145, -15, 150, -42, 142, -70, 148, -98, 140, -125, 146, -152, 138, -178, 145, -200)
+
+[node name="HangingBranch2" type="Polygon2D" parent="."]
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(800, -200, 805, -172, 798, -145, 808, -118, 802, -90, 812, -62, 808, -35, 815, -8, 810, 18, 818, 42, 822, 58, 818, 52, 808, 22, 803, -5, 796, -32, 792, -58, 798, -88, 790, -115, 795, -142, 788, -170, 795, -200)
+
+[node name="HangingBranch3" type="Polygon2D" parent="."]
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(1950, -200, 1955, -168, 1948, -138, 1958, -108, 1952, -78, 1962, -48, 1958, -18, 1966, 12, 1960, 42, 1970, 70, 1975, 100, 1968, 92, 1958, 65, 1952, 38, 1945, 10, 1940, -18, 1946, -48, 1938, -78, 1944, -108, 1936, -138, 1942, -168, 1945, -200)
+
+[node name="HangingBranch4" type="Polygon2D" parent="."]
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(2850, -200, 2855, -175, 2848, -150, 2858, -125, 2852, -100, 2860, -75, 2855, -50, 2862, -25, 2858, 0, 2865, 22, 2860, 35, 2855, 28, 2848, 2, 2845, -25, 2850, -48, 2842, -72, 2848, -98, 2840, -122, 2845, -148, 2838, -175, 2845, -200)
+
+;; --- Forest Decorations: Ground Vegetation ---
+
+[node name="GrassCluster1" type="Polygon2D" parent="."]
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(50, 500, 53, 488, 56, 472, 59, 488, 62, 500, 65, 478, 68, 460, 71, 475, 74, 500, 77, 482, 80, 465, 83, 480, 86, 500, 86, 502, 50, 502)
+
+[node name="GrassCluster2" type="Polygon2D" parent="."]
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(580, 500, 583, 485, 586, 468, 589, 482, 592, 500, 595, 476, 598, 458, 601, 474, 604, 500, 607, 480, 610, 462, 613, 478, 616, 500, 616, 502, 580, 502)
+
+[node name="GrassCluster3" type="Polygon2D" parent="."]
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(1380, 500, 1383, 486, 1386, 470, 1389, 484, 1392, 500, 1395, 478, 1398, 462, 1401, 476, 1404, 500, 1407, 482, 1410, 466, 1413, 480, 1416, 500, 1416, 502, 1380, 502)
+
+[node name="GrassCluster4" type="Polygon2D" parent="."]
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(2780, 500, 2783, 484, 2786, 466, 2789, 480, 2792, 500, 2795, 474, 2798, 456, 2801, 472, 2804, 500, 2807, 478, 2810, 460, 2813, 476, 2816, 500, 2816, 502, 2780, 502)
+
+[node name="GrassCluster5" type="Polygon2D" parent="."]
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(3200, 500, 3203, 488, 3206, 474, 3209, 486, 3212, 500, 3215, 480, 3218, 464, 3221, 478, 3224, 500, 3227, 484, 3230, 468, 3233, 482, 3236, 500, 3236, 502, 3200, 502)
+
+;; --- Forest Decorations: Root Shapes ---
+
+[node name="RootShape1" type="Polygon2D" parent="."]
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(0, 500, 8, 495, 18, 498, 30, 492, 45, 496, 60, 488, 78, 494, 95, 486, 110, 492, 120, 500, 115, 502, 105, 496, 90, 500, 75, 494, 58, 498, 40, 502, 25, 498, 12, 502, 0, 502)
+
+[node name="RootShape2" type="Polygon2D" parent="."]
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(1400, 500, 1410, 494, 1422, 498, 1436, 490, 1452, 496, 1470, 488, 1485, 494, 1498, 500, 1492, 502, 1478, 496, 1462, 500, 1448, 494, 1432, 498, 1418, 502, 1406, 498, 1400, 502)
+
+[node name="RootShape3" type="Polygon2D" parent="."]
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(2700, 500, 2710, 493, 2724, 498, 2740, 488, 2758, 495, 2775, 486, 2790, 494, 2800, 500, 2795, 502, 2782, 496, 2768, 500, 2752, 492, 2736, 498, 2720, 502, 2708, 497, 2700, 502)
+
+;; --- Forest Decorations: Fallen Leaves Pile ---
+
+[node name="FallenLeaves" type="Polygon2D" parent="."]
+color = Color(0.04, 0.04, 0.04, 1)
+polygon = PackedVector2Array(160, 500, 168, 494, 178, 497, 190, 490, 205, 493, 218, 488, 230, 492, 242, 486, 255, 490, 265, 495, 272, 500, 260, 498, 245, 502, 230, 497, 215, 501, 200, 496, 185, 500, 172, 498, 160, 502)

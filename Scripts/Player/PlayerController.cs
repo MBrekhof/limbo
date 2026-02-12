@@ -2,6 +2,8 @@ using Godot;
 
 namespace Limbo;
 
+public enum AnimState { Idle, Walk, Jump, Fall, Death }
+
 public partial class PlayerController : CharacterBody2D
 {
     [Export] public float Speed { get; set; } = 300f;
@@ -13,6 +15,9 @@ public partial class PlayerController : CharacterBody2D
     [Export] public float CoyoteTime { get; set; } = 0.1f;
     [Export] public float JumpBufferTime { get; set; } = 0.1f;
     [Export] public float FallDeathThreshold { get; set; } = 2000f;
+
+    public AnimState CurrentAnimState { get; private set; } = AnimState.Idle;
+    public float FacingDirection { get; private set; } = 1f;
 
     private float _gravity;
     private float _coyoteTimer;
@@ -94,6 +99,34 @@ public partial class PlayerController : CharacterBody2D
         Velocity = velocity;
         MoveAndSlide();
 
+        // Update facing direction (keep last direction when stationary).
+        if (Mathf.Abs(Velocity.X) > 0.01f)
+        {
+            FacingDirection = Mathf.Sign(Velocity.X);
+        }
+
+        // Update animation state.
+        if (_isDead)
+        {
+            CurrentAnimState = AnimState.Death;
+        }
+        else if (!IsOnFloor() && Velocity.Y < 0)
+        {
+            CurrentAnimState = AnimState.Jump;
+        }
+        else if (!IsOnFloor() && Velocity.Y > 0)
+        {
+            CurrentAnimState = AnimState.Fall;
+        }
+        else if (Mathf.Abs(Velocity.X) > 10)
+        {
+            CurrentAnimState = AnimState.Walk;
+        }
+        else
+        {
+            CurrentAnimState = AnimState.Idle;
+        }
+
         // Fall death check.
         if (Position.Y > FallDeathThreshold)
         {
@@ -108,6 +141,7 @@ public partial class PlayerController : CharacterBody2D
 
         _isDead = true;
         Velocity = Vector2.Zero;
+        CurrentAnimState = AnimState.Death;
         SetPhysicsProcess(false);
         GameManager.Instance.OnPlayerDied();
     }
@@ -119,6 +153,7 @@ public partial class PlayerController : CharacterBody2D
         Velocity = Vector2.Zero;
         _coyoteTimer = 0f;
         _jumpBufferTimer = 0f;
+        CurrentAnimState = AnimState.Idle;
         SetPhysicsProcess(true);
     }
 

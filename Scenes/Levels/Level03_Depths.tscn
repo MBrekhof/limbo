@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=32 format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/Environment/EnvironmentTemplate.tscn" id="env_1"]
 [ext_resource type="PackedScene" path="res://Scenes/Player/Player.tscn" id="player_1"]
@@ -45,6 +45,36 @@ size = Vector2(500, 200)
 [sub_resource type="RectangleShape2D" id="wall_shape"]
 size = Vector2(40, 300)
 
+; === Light gradient sub-resources (shared by all PointLight2Ds) ===
+[sub_resource type="Gradient" id="light_grad"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="light_tex"]
+gradient = SubResource("light_grad")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+; === Light occluder polygons ===
+[sub_resource type="OccluderPolygon2D" id="occluder_ground_start"]
+polygon = PackedVector2Array(-200, -100, 200, -100, 200, 100, -200, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground_post_timing"]
+polygon = PackedVector2Array(-100, -100, 100, -100, 100, 100, -100, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground_crusher"]
+polygon = PackedVector2Array(-500, -100, 500, -100, 500, 100, -500, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground_puzzle"]
+polygon = PackedVector2Array(-950, -100, 950, -100, 950, 100, -950, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_puzzle_wall"]
+polygon = PackedVector2Array(-20, -150, 20, -150, 20, 150, -20, 150)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground_end"]
+polygon = PackedVector2Array(-250, -100, 250, -100, 250, 100, -250, 100)
+
 ; === Root ===
 [node name="Level03_Depths" type="Node2D"]
 
@@ -63,6 +93,54 @@ position = Vector2(100, 450)
 [node name="DeathScreen" parent="." instance=ExtResource("deathscreen_1")]
 
 ; ============================================================
+; POINT LIGHTS (sparse — darkness is the theme)
+; ============================================================
+
+; Checkpoint beacon 1 — faint blue-white guide near start
+[node name="CaveLight1" type="PointLight2D" parent="."]
+position = Vector2(100, 350)
+color = Color(0.6, 0.7, 0.9, 1)
+energy = 0.3
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 2.5
+
+; Vertical platforms area — very faint, player barely sees
+[node name="CaveLight2" type="PointLight2D" parent="."]
+position = Vector2(900, 250)
+color = Color(0.5, 0.55, 0.7, 1)
+energy = 0.25
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 3.0
+
+; Multi-step puzzle — slightly brighter for mechanism visibility
+[node name="CaveLight3" type="PointLight2D" parent="."]
+position = Vector2(3200, 200)
+color = Color(0.6, 0.65, 0.8, 1)
+energy = 0.35
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 3.5
+
+; Upper ledge hint — subtle glow near the lever
+[node name="CaveLight4" type="PointLight2D" parent="."]
+position = Vector2(3800, 150)
+color = Color(0.7, 0.7, 0.8, 1)
+energy = 0.3
+texture = SubResource("light_tex")
+texture_scale = 2.0
+
+; Ending area warmth — warm hopeful glow, noticeably brighter
+[node name="CaveLight5" type="PointLight2D" parent="."]
+position = Vector2(5750, 300)
+color = Color(0.95, 0.85, 0.7, 1)
+energy = 0.7
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 5.0
+
+; ============================================================
 ; SECTION 1: Start area (x:0-400)
 ; ============================================================
 [node name="GroundStart" type="StaticBody2D" parent="."]
@@ -73,12 +151,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="GroundStart"]
 shape = SubResource("ground_start_shape")
 
-[node name="Visual" type="ColorRect" parent="GroundStart"]
-offset_left = -200.0
-offset_top = -100.0
-offset_right = 200.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="GroundStart"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-200, -100, -185, -118, -170, -102, -155, -114, -140, -96, -120, -122, -108, -104, -95, -100, -78, -116, -60, -98, -42, -120, -30, -106, -15, -100, 0, -112, 18, -96, 40, -118, 58, -100, 80, -108, 100, -94, 120, -120, 138, -102, 155, -112, 170, -100, 185, -116, 200, -100, 200, 100, -200, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="GroundStart"]
+occluder = SubResource("occluder_ground_start")
 
 [node name="Checkpoint1" parent="." instance=ExtResource("checkpoint_1")]
 position = Vector2(200, 470)
@@ -132,12 +210,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="GroundPostTiming"]
 shape = SubResource("ground_post_timing_shape")
 
-[node name="Visual" type="ColorRect" parent="GroundPostTiming"]
-offset_left = -100.0
-offset_top = -100.0
-offset_right = 100.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="GroundPostTiming"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-100, -100, -88, -118, -74, -104, -60, -116, -45, -98, -30, -122, -18, -106, -5, -100, 10, -114, 25, -96, 40, -118, 55, -104, 68, -100, 82, -110, 100, -100, 100, 100, -100, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="GroundPostTiming"]
+occluder = SubResource("occluder_ground_post_timing")
 
 [node name="Checkpoint2" parent="." instance=ExtResource("checkpoint_1")]
 position = Vector2(1500, 470)
@@ -154,12 +232,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="GroundCrusher"]
 shape = SubResource("ground_crusher_shape")
 
-[node name="Visual" type="ColorRect" parent="GroundCrusher"]
-offset_left = -500.0
-offset_top = -100.0
-offset_right = 500.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="GroundCrusher"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-500, -100, -480, -118, -462, -102, -440, -120, -420, -96, -398, -114, -380, -100, -358, -122, -340, -104, -318, -100, -298, -116, -275, -98, -252, -118, -230, -102, -210, -100, -188, -112, -165, -96, -140, -120, -118, -102, -95, -110, -72, -100, -50, -116, -28, -98, -5, -122, 18, -100, 40, -108, 62, -96, 85, -118, 108, -102, 130, -114, 152, -100, 175, -120, 198, -104, 220, -100, 242, -116, 265, -98, 288, -118, 310, -102, 332, -110, 355, -96, 378, -122, 400, -100, 422, -108, 445, -96, 468, -114, 500, -100, 500, 100, -500, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="GroundCrusher"]
+occluder = SubResource("occluder_ground_crusher")
 
 ; Ceiling spikes (static DeathZones hanging from above)
 ; Player must duck/time their run. Since there's no duck mechanic,
@@ -215,12 +293,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="GroundPuzzle"]
 shape = SubResource("ground_puzzle_shape")
 
-[node name="Visual" type="ColorRect" parent="GroundPuzzle"]
-offset_left = -950.0
-offset_top = -100.0
-offset_right = 950.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="GroundPuzzle"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-950, -100, -932, -118, -910, -104, -888, -122, -865, -96, -842, -116, -820, -100, -798, -114, -775, -98, -752, -120, -730, -102, -708, -100, -685, -118, -662, -96, -640, -112, -618, -100, -595, -122, -572, -104, -550, -116, -528, -100, -505, -110, -482, -96, -460, -118, -438, -102, -415, -100, -392, -114, -370, -98, -348, -120, -325, -100, -302, -108, -280, -96, -258, -122, -235, -104, -212, -100, -190, -116, -168, -98, -145, -118, -122, -102, -100, -110, -78, -100, -55, -114, -32, -96, -10, -120, 12, -100, 35, -108, 58, -96, 80, -118, 102, -104, 125, -100, 148, -116, 170, -98, 192, -122, 215, -102, 238, -100, 260, -110, 282, -96, 305, -118, 328, -104, 350, -100, 372, -114, 395, -98, 418, -120, 440, -102, 462, -116, 485, -100, 508, -108, 530, -96, 552, -122, 575, -100, 598, -110, 620, -96, 642, -118, 665, -104, 688, -100, 710, -116, 732, -98, 755, -120, 778, -102, 800, -110, 822, -96, 845, -118, 868, -100, 890, -108, 912, -96, 935, -114, 950, -100, 950, 100, -950, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="GroundPuzzle"]
+occluder = SubResource("occluder_ground_puzzle")
 
 ; PushableBox at x:2800
 [node name="PushableBox1" parent="." instance=ExtResource("box_1")]
@@ -249,12 +327,9 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="UpperLedge"]
 shape = SubResource("upper_ledge_shape")
 
-[node name="Visual" type="ColorRect" parent="UpperLedge"]
-offset_left = -300.0
-offset_top = -20.0
-offset_right = 300.0
-offset_bottom = 20.0
+[node name="Visual" type="Polygon2D" parent="UpperLedge"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-300, -20, -282, -35, -268, -22, -250, -32, -232, -18, -215, -38, -200, -24, -182, -20, -165, -34, -148, -18, -130, -36, -112, -22, -95, -20, -78, -30, -60, -18, -42, -34, -25, -22, -8, -20, 10, -32, 28, -18, 45, -36, 62, -24, 80, -20, 98, -34, 115, -18, 132, -32, 150, -22, 168, -20, 185, -36, 202, -18, 220, -30, 238, -22, 255, -20, 272, -34, 290, -18, 300, -20, 300, 20, -300, 20)
 
 ; LeverSwitch on the upper ledge at x:3800 — connected to Door1
 [node name="Lever1" parent="." instance=ExtResource("lever_1")]
@@ -275,12 +350,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="PuzzleWall"]
 shape = SubResource("wall_shape")
 
-[node name="Visual" type="ColorRect" parent="PuzzleWall"]
-offset_left = -20.0
-offset_top = -150.0
-offset_right = 20.0
-offset_bottom = 150.0
+[node name="Visual" type="Polygon2D" parent="PuzzleWall"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-20, -150, -14, -148, -8, -150, -2, -146, 4, -150, 10, -148, 16, -150, 20, -150, 20, 150, -20, 150)
+
+[node name="Occluder" type="LightOccluder2D" parent="PuzzleWall"]
+occluder = SubResource("occluder_puzzle_wall")
 
 [node name="Checkpoint4" parent="." instance=ExtResource("checkpoint_1")]
 position = Vector2(4600, 470)
@@ -296,12 +371,9 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="GroundPostDoor"]
 shape = SubResource("ground_post_door_shape")
 
-[node name="Visual" type="ColorRect" parent="GroundPostDoor"]
-offset_left = -200.0
-offset_top = -100.0
-offset_right = 200.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="GroundPostDoor"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-200, -100, -182, -118, -165, -104, -148, -120, -130, -96, -112, -116, -95, -100, -78, -112, -60, -98, -42, -120, -25, -104, -8, -100, 10, -114, 28, -96, 45, -118, 62, -102, 80, -100, 98, -110, 115, -96, 132, -122, 150, -100, 168, -108, 185, -96, 200, -100, 200, 100, -200, 100)
 
 ; ============================================================
 ; SECTION 6: Final gauntlet - falling platforms over spikes (x:4800-5500)
@@ -333,7 +405,7 @@ position = Vector2(5350, 470)
 
 ; ============================================================
 ; SECTION 7: Ending area (x:5500-6000)
-; Safe ground, slightly lighter feel — open space, no transition
+; Safe ground, warm light — hope after the darkness
 ; ============================================================
 [node name="GroundEnd" type="StaticBody2D" parent="."]
 position = Vector2(5750, 600)
@@ -343,9 +415,157 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="GroundEnd"]
 shape = SubResource("ground_end_shape")
 
-[node name="Visual" type="ColorRect" parent="GroundEnd"]
-offset_left = -250.0
-offset_top = -100.0
-offset_right = 250.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="GroundEnd"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-250, -100, -232, -116, -215, -102, -198, -118, -180, -96, -162, -114, -145, -100, -128, -120, -110, -104, -92, -100, -75, -112, -58, -98, -40, -118, -22, -102, -5, -100, 12, -110, 30, -96, 48, -122, 65, -100, 82, -108, 100, -96, 118, -116, 135, -102, 152, -100, 170, -114, 188, -98, 205, -120, 222, -104, 240, -100, 250, -100, 250, 100, -250, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="GroundEnd"]
+occluder = SubResource("occluder_ground_end")
+
+; ============================================================
+; CAVE DECORATIONS
+; ============================================================
+
+; === Stalactites hanging from ceiling ===
+
+; Stalactite cluster above start area
+[node name="Stalactite1" type="Polygon2D" parent="."]
+position = Vector2(150, 0)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-14, -200, -10, -172, -6, -200, -2, -148, 2, -200, 6, -168, 10, -200, 14, -190)
+
+; Large stalactite above timing platforms
+[node name="Stalactite2" type="Polygon2D" parent="."]
+position = Vector2(700, 0)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-18, -200, -12, -150, -6, -200, 0, -120, 6, -200, 12, -155, 18, -200)
+
+; Stalactite above crusher gauntlet entrance
+[node name="Stalactite3" type="Polygon2D" parent="."]
+position = Vector2(1600, 0)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-10, -200, -5, -162, 0, -200, 5, -170, 10, -200)
+
+; Wide stalactite cluster above puzzle area
+[node name="Stalactite4" type="Polygon2D" parent="."]
+position = Vector2(3000, 0)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-20, -200, -15, -158, -10, -200, -5, -140, 0, -200, 5, -165, 10, -200, 15, -145, 20, -200)
+
+; Stalactite above falling platforms
+[node name="Stalactite5" type="Polygon2D" parent="."]
+position = Vector2(5100, 0)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-16, -200, -10, -138, -4, -200, 2, -155, 8, -200, 14, -168, 16, -200)
+
+; Small stalactite near end
+[node name="Stalactite6" type="Polygon2D" parent="."]
+position = Vector2(5500, 0)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-8, -200, -3, -175, 2, -200, 7, -180, 8, -200)
+
+; === Stalagmites from ground ===
+
+; Stalagmite near start
+[node name="Stalagmite1" type="Polygon2D" parent="."]
+position = Vector2(350, 500)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-12, 0, -4, -45, 0, -60, 4, -42, 12, 0)
+
+; Stalagmite in crusher area
+[node name="Stalagmite2" type="Polygon2D" parent="."]
+position = Vector2(2400, 500)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-15, 0, -8, -38, -3, -72, 2, -35, 8, -55, 15, 0)
+
+; Stalagmite near puzzle area
+[node name="Stalagmite3" type="Polygon2D" parent="."]
+position = Vector2(2700, 500)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-10, 0, -3, -50, 2, -68, 6, -48, 10, 0)
+
+; Stalagmite near final gauntlet
+[node name="Stalagmite4" type="Polygon2D" parent="."]
+position = Vector2(4750, 500)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-14, 0, -6, -42, 0, -58, 5, -40, 14, 0)
+
+; === Dripping water hints ===
+
+; Water drip from stalactite 2
+[node name="WaterDrip1" type="Polygon2D" parent="."]
+position = Vector2(700, -120)
+color = Color(0.08, 0.08, 0.08, 1)
+polygon = PackedVector2Array(-1, 0, 1, 0, 1, 50, -1, 50)
+
+; Water drip from stalactite 4
+[node name="WaterDrip2" type="Polygon2D" parent="."]
+position = Vector2(3000, -140)
+color = Color(0.08, 0.08, 0.08, 1)
+polygon = PackedVector2Array(-1, 0, 1, 0, 1, 40, -1, 40)
+
+; Water drip from stalactite 5
+[node name="WaterDrip3" type="Polygon2D" parent="."]
+position = Vector2(5100, -138)
+color = Color(0.08, 0.08, 0.08, 1)
+polygon = PackedVector2Array(-1, 0, 1, 0, 1, 55, -1, 55)
+
+; === Rock rubble piles ===
+
+; Rubble near crusher gauntlet
+[node name="Rubble1" type="Polygon2D" parent="."]
+position = Vector2(1850, 498)
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(-18, 0, -12, -10, -5, -8, 0, -14, 8, -6, 14, -12, 20, 0)
+
+; Rubble near post-door area
+[node name="Rubble2" type="Polygon2D" parent="."]
+position = Vector2(4500, 498)
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(-22, 0, -15, -8, -8, -15, 0, -10, 6, -16, 12, -8, 18, -12, 22, 0)
+
+; Rubble near ending area
+[node name="Rubble3" type="Polygon2D" parent="."]
+position = Vector2(5600, 498)
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(-16, 0, -10, -12, -4, -6, 2, -14, 8, -8, 16, 0)
+
+; === Roots breaking through ceiling ===
+
+; Root system above start area
+[node name="Root1" type="Polygon2D" parent="."]
+position = Vector2(300, -200)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-6, 0, -4, 20, -8, 45, -5, 70, -10, 95, -8, 120, -4, 115, -2, 90, 2, 65, -1, 40, 3, 15, 6, 0)
+
+; Root near crusher area
+[node name="Root2" type="Polygon2D" parent="."]
+position = Vector2(2100, -200)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-5, 0, -3, 25, -7, 50, -4, 80, -8, 105, -5, 100, -1, 75, 2, 48, -2, 22, 5, 0)
+
+; Root near ending area
+[node name="Root3" type="Polygon2D" parent="."]
+position = Vector2(5400, -200)
+color = Color(0.02, 0.02, 0.02, 1)
+polygon = PackedVector2Array(-7, 0, -5, 30, -9, 55, -6, 85, -10, 110, -7, 105, -3, 80, 1, 52, -3, 28, 4, 0)
+
+; === Bone shapes (eerie touch near final gauntlet) ===
+
+; Bone 1 near falling platforms
+[node name="Bone1" type="Polygon2D" parent="."]
+position = Vector2(4850, 496)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-20, -3, -16, -6, -12, -3, -8, -4, 8, -4, 12, -3, 16, -6, 20, -3, 16, 0, 12, 3, 8, 0, -8, 0, -12, 3, -16, 0)
+
+; Bone 2 near ending
+[node name="Bone2" type="Polygon2D" parent="."]
+position = Vector2(5450, 496)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-15, -2, -12, -5, -8, -2, -5, -3, 5, -3, 8, -2, 12, -5, 15, -2, 12, 1, 8, 3, 5, 0, -5, 0, -8, 3, -12, 1)
+
+; === Ending area ground glow (semi-transparent) ===
+[node name="EndingGlow" type="Polygon2D" parent="."]
+position = Vector2(5750, 495)
+color = Color(0.08, 0.08, 0.08, 0.3)
+polygon = PackedVector2Array(-120, 0, -80, -20, -40, -8, 0, -25, 40, -10, 80, -18, 120, 0)

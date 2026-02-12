@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=31 format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/Environment/EnvironmentTemplate.tscn" id="env_1"]
 [ext_resource type="PackedScene" path="res://Scenes/Player/Player.tscn" id="player_1"]
@@ -46,6 +46,31 @@ size = Vector2(200, 200)
 [sub_resource type="RectangleShape2D" id="ground_falling_end_shape"]
 size = Vector2(200, 200)
 
+[sub_resource type="Gradient" id="light_grad"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="light_tex"]
+gradient = SubResource("light_grad")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground1"]
+polygon = PackedVector2Array(-250, -100, 250, -100, 250, 100, -250, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground3"]
+polygon = PackedVector2Array(-600, -100, 600, -100, 600, 100, -600, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground4"]
+polygon = PackedVector2Array(-600, -100, 600, -100, 600, 100, -600, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground5"]
+polygon = PackedVector2Array(-250, -100, 250, -100, 250, 100, -250, 100)
+
+[sub_resource type="OccluderPolygon2D" id="occluder_ground_landing1"]
+polygon = PackedVector2Array(-100, -100, 100, -100, 100, 100, -100, 100)
+
 ; === Root ===
 [node name="Level02_Industrial" type="Node2D"]
 
@@ -74,12 +99,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Ground1"]
 shape = SubResource("ground1_shape")
 
-[node name="Visual" type="ColorRect" parent="Ground1"]
-offset_left = -250.0
-offset_top = -100.0
-offset_right = 250.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="Ground1"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-250, -100, -248, -106, -244, -106, -240, -100, -220, -100, -218, -104, -216, -104, -214, -100, -180, -100, -170, -103, -140, -100, -138, -108, -132, -108, -130, -100, -80, -100, -78, -105, -76, -105, -74, -100, -30, -102, 0, -100, 40, -100, 42, -107, 46, -107, 48, -100, 100, -100, 130, -103, 160, -100, 162, -106, 166, -106, 168, -100, 200, -100, 210, -102, 230, -100, 232, -108, 236, -108, 238, -100, 250, -100, 250, 100, -250, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="Ground1"]
+occluder = SubResource("occluder_ground1")
 
 ; Checkpoint at start
 [node name="Checkpoint1" parent="." instance=ExtResource("checkpoint_1")]
@@ -109,12 +134,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="GroundLanding1"]
 shape = SubResource("ground2_shape")
 
-[node name="Visual" type="ColorRect" parent="GroundLanding1"]
-offset_left = -100.0
-offset_top = -100.0
-offset_right = 100.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="GroundLanding1"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-100, -100, -98, -106, -94, -106, -92, -100, -50, -100, -48, -104, -46, -104, -44, -100, -10, -102, 20, -100, 22, -107, 26, -107, 28, -100, 60, -100, 70, -103, 90, -100, 92, -105, 96, -105, 98, -100, 100, -100, 100, 100, -100, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="GroundLanding1"]
+occluder = SubResource("occluder_ground_landing1")
 
 ; MovingPlatform: horizontal between (600,350) and (1100,350)
 ; Position at start waypoint, waypoints relative
@@ -138,12 +163,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Ground3"]
 shape = SubResource("ground3_shape")
 
-[node name="Visual" type="ColorRect" parent="Ground3"]
-offset_left = -600.0
-offset_top = -100.0
-offset_right = 600.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="Ground3"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-600, -100, -598, -107, -594, -107, -592, -100, -550, -100, -540, -103, -500, -100, -498, -106, -494, -106, -492, -100, -420, -100, -418, -108, -412, -108, -410, -100, -350, -102, -300, -100, -280, -100, -278, -105, -276, -105, -274, -100, -200, -100, -198, -106, -194, -106, -192, -100, -120, -100, -100, -103, -60, -100, -58, -107, -52, -107, -50, -100, 0, -100, 50, -102, 100, -100, 102, -106, 106, -106, 108, -100, 180, -100, 200, -104, 240, -100, 242, -108, 246, -108, 248, -100, 320, -100, 340, -103, 400, -100, 402, -105, 406, -105, 408, -100, 480, -100, 500, -102, 540, -100, 542, -107, 546, -107, 548, -100, 590, -100, 592, -106, 596, -106, 598, -100, 600, -100, 600, 100, -600, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="Ground3"]
+occluder = SubResource("occluder_ground3")
 
 ; LeverSwitch at x:1500 — player interacts to open Door1
 [node name="Lever1" parent="." instance=ExtResource("lever_1")]
@@ -190,12 +215,9 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="GroundFallingEnd"]
 shape = SubResource("ground_falling_end_shape")
 
-[node name="Visual" type="ColorRect" parent="GroundFallingEnd"]
-offset_left = -100.0
-offset_top = -100.0
-offset_right = 100.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="GroundFallingEnd"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-100, -100, -98, -107, -94, -107, -92, -100, -60, -100, -50, -103, -20, -100, -18, -106, -14, -106, -12, -100, 30, -102, 50, -100, 52, -105, 56, -105, 58, -100, 80, -100, 82, -108, 86, -108, 88, -100, 100, -100, 100, 100, -100, 100)
 
 ; Checkpoint at x:3300
 [node name="Checkpoint3" parent="." instance=ExtResource("checkpoint_1")]
@@ -212,12 +234,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Ground4"]
 shape = SubResource("ground4_shape")
 
-[node name="Visual" type="ColorRect" parent="Ground4"]
-offset_left = -600.0
-offset_top = -100.0
-offset_right = 600.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="Ground4"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-600, -100, -598, -106, -594, -106, -592, -100, -540, -100, -530, -104, -490, -100, -488, -108, -482, -108, -480, -100, -400, -100, -398, -105, -396, -105, -394, -100, -330, -102, -280, -100, -260, -100, -258, -107, -254, -107, -252, -100, -180, -100, -178, -106, -174, -106, -172, -100, -100, -100, -80, -103, -40, -100, -38, -108, -32, -108, -30, -100, 40, -100, 60, -102, 100, -100, 102, -105, 106, -105, 108, -100, 200, -100, 220, -104, 260, -100, 262, -107, 266, -107, 268, -100, 350, -100, 370, -103, 410, -100, 412, -106, 416, -106, 418, -100, 500, -100, 520, -102, 560, -100, 562, -108, 566, -108, 568, -100, 600, -100, 600, 100, -600, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="Ground4"]
+occluder = SubResource("occluder_ground4")
 
 ; Small ledge for the PushableBox (elevated)
 [node name="Ledge1" type="StaticBody2D" parent="."]
@@ -228,12 +250,9 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Ledge1"]
 shape = SubResource("ledge1_shape")
 
-[node name="Visual" type="ColorRect" parent="Ledge1"]
-offset_left = -50.0
-offset_top = -25.0
-offset_right = 50.0
-offset_bottom = 25.0
+[node name="Visual" type="Polygon2D" parent="Ledge1"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-50, -25, -48, -30, -44, -30, -42, -25, -10, -25, -8, -29, -6, -29, -4, -25, 20, -27, 40, -25, 42, -30, 46, -30, 48, -25, 50, -25, 50, 25, -50, 25)
 
 ; PushableBox on the ledge
 [node name="PushableBox1" parent="." instance=ExtResource("box_1")]
@@ -259,12 +278,12 @@ collision_mask = 0
 [node name="CollisionShape" type="CollisionShape2D" parent="Ground5"]
 shape = SubResource("ground5_shape")
 
-[node name="Visual" type="ColorRect" parent="Ground5"]
-offset_left = -250.0
-offset_top = -100.0
-offset_right = 250.0
-offset_bottom = 100.0
+[node name="Visual" type="Polygon2D" parent="Ground5"]
 color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-250, -100, -248, -107, -244, -107, -242, -100, -200, -100, -190, -104, -160, -100, -158, -106, -154, -106, -152, -100, -90, -100, -88, -108, -82, -108, -80, -100, -30, -102, 0, -100, 30, -100, 32, -105, 36, -105, 38, -100, 100, -100, 120, -103, 150, -100, 152, -107, 156, -107, 158, -100, 210, -100, 220, -104, 240, -100, 242, -106, 246, -106, 248, -100, 250, -100, 250, 100, -250, 100)
+
+[node name="Occluder" type="LightOccluder2D" parent="Ground5"]
+occluder = SubResource("occluder_ground5")
 
 ; === Level Transition to Level 03 ===
 [node name="LevelTransition" type="Area2D" parent="."]
@@ -278,3 +297,206 @@ NextLevelPath = "res://Scenes/Levels/Level03_Depths.tscn"
 
 [node name="CollisionShape" type="CollisionShape2D" parent="LevelTransition"]
 shape = SubResource("transition_shape")
+
+; ============================================================
+; INDUSTRIAL LIGHTING
+; ============================================================
+
+; Overhead lamp 1 — yellowish industrial lamp near start
+[node name="OverheadLamp1" type="PointLight2D" parent="."]
+position = Vector2(250, 200)
+color = Color(0.95, 0.85, 0.6, 1)
+energy = 0.5
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 3.0
+
+; Moving platform area — bright guide light
+[node name="PlatformAreaLight" type="PointLight2D" parent="."]
+position = Vector2(850, 200)
+color = Color(0.9, 0.9, 0.95, 1)
+energy = 0.5
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 4.0
+
+; Lever highlight — subtle warm light on the lever
+[node name="LeverHighlight" type="PointLight2D" parent="."]
+position = Vector2(1500, 350)
+color = Color(0.9, 0.8, 0.5, 1)
+energy = 0.35
+texture = SubResource("light_tex")
+texture_scale = 2.0
+
+; Death zone warning — danger red near falling platforms
+[node name="DeathZoneWarning" type="PointLight2D" parent="."]
+position = Vector2(2850, 400)
+color = Color(0.9, 0.4, 0.3, 1)
+energy = 0.3
+texture = SubResource("light_tex")
+texture_scale = 2.5
+
+; Overhead lamp 2 — second industrial lamp
+[node name="OverheadLamp2" type="PointLight2D" parent="."]
+position = Vector2(3500, 200)
+color = Color(0.95, 0.85, 0.6, 1)
+energy = 0.5
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 3.0
+
+; Pressure plate area light
+[node name="PressurePlateLight" type="PointLight2D" parent="."]
+position = Vector2(3700, 300)
+color = Color(0.8, 0.8, 0.9, 1)
+energy = 0.4
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 3.0
+
+; Exit light — cool industrial glow at level end
+[node name="ExitLight" type="PointLight2D" parent="."]
+position = Vector2(4750, 200)
+color = Color(0.7, 0.8, 0.9, 1)
+energy = 0.5
+shadow_enabled = true
+texture = SubResource("light_tex")
+texture_scale = 4.0
+
+; ============================================================
+; INDUSTRIAL DECORATIONS
+; ============================================================
+
+; --- Hanging Chains ---
+; Chain 1: near start area, hanging from above
+[node name="Chain1" type="Polygon2D" parent="."]
+position = Vector2(150, 300)
+color = Color(0.05, 0.05, 0.05, 1)
+polygon = PackedVector2Array(-1, 0, 1, 0, 1, 150, -1, 150)
+
+; Chain 2: above pit area
+[node name="Chain2" type="Polygon2D" parent="."]
+position = Vector2(700, 250)
+color = Color(0.05, 0.05, 0.05, 1)
+polygon = PackedVector2Array(-1, 0, 1, 0, 1, 120, -1, 120)
+
+; Chain 3: near door area
+[node name="Chain3" type="Polygon2D" parent="."]
+position = Vector2(1950, 280)
+color = Color(0.05, 0.05, 0.05, 1)
+polygon = PackedVector2Array(-1, 0, 1, 0, 1, 180, -1, 180)
+
+; Chain 4: near falling platforms
+[node name="Chain4" type="Polygon2D" parent="."]
+position = Vector2(2900, 260)
+color = Color(0.05, 0.05, 0.05, 1)
+polygon = PackedVector2Array(-1, 0, 1, 0, 1, 140, -1, 140)
+
+; --- Pipe shapes along walls ---
+; Pipe 1: horizontal pipe along Ground1 left edge
+[node name="Pipe1" type="Polygon2D" parent="."]
+position = Vector2(50, 530)
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(0, -5, 80, -5, 80, 5, 0, 5)
+
+; Pipe 2: horizontal pipe along Ground3
+[node name="Pipe2" type="Polygon2D" parent="."]
+position = Vector2(1400, 535)
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(0, -5, 100, -5, 100, 5, 0, 5)
+
+; Pipe 3: vertical pipe near door
+[node name="Pipe3" type="Polygon2D" parent="."]
+position = Vector2(2050, 380)
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(-5, 0, 5, 0, 5, 120, -5, 120)
+
+; --- Gear/Cog near moving platform ---
+; 8 teeth gear: 16 vertices alternating outer (40px) and inner (28px) radius
+[node name="GearCog" type="Polygon2D" parent="."]
+position = Vector2(750, 340)
+color = Color(0.04, 0.04, 0.04, 1)
+polygon = PackedVector2Array(40, 0, 26, 11, 28, 28, 11, 26, 0, 40, -11, 26, -28, 28, -26, 11, -40, 0, -26, -11, -28, -28, -11, -26, 0, -40, 11, -26, 28, -28, 26, -11)
+
+; --- Grate patterns on floors ---
+; Grate set 1: on Ground1
+[node name="Grate1a" type="Polygon2D" parent="."]
+position = Vector2(200, 498)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-50, -1, 50, -1, 50, 1, -50, 1)
+
+[node name="Grate1b" type="Polygon2D" parent="."]
+position = Vector2(200, 504)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-50, -1, 50, -1, 50, 1, -50, 1)
+
+[node name="Grate1c" type="Polygon2D" parent="."]
+position = Vector2(200, 510)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-50, -1, 50, -1, 50, 1, -50, 1)
+
+; Grate set 2: on Ground4
+[node name="Grate2a" type="Polygon2D" parent="."]
+position = Vector2(3800, 498)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-50, -1, 50, -1, 50, 1, -50, 1)
+
+[node name="Grate2b" type="Polygon2D" parent="."]
+position = Vector2(3800, 504)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-50, -1, 50, -1, 50, 1, -50, 1)
+
+[node name="Grate2c" type="Polygon2D" parent="."]
+position = Vector2(3800, 510)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-50, -1, 50, -1, 50, 1, -50, 1)
+
+; --- Broken Railing ---
+; Left post
+[node name="RailingPost1" type="Polygon2D" parent="."]
+position = Vector2(460, 470)
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(-2, 0, 2, 0, 2, -35, -2, -35)
+
+; Right post
+[node name="RailingPost2" type="Polygon2D" parent="."]
+position = Vector2(490, 470)
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(-2, 0, 2, 0, 2, -35, -2, -35)
+
+; Diagonal broken bar between posts
+[node name="RailingBrokenBar" type="Polygon2D" parent="."]
+position = Vector2(460, 440)
+color = Color(0.03, 0.03, 0.03, 1)
+polygon = PackedVector2Array(0, 0, 2, -1, 20, -18, 18, -17)
+
+; --- Steam/Vent Grate ---
+; Vent frame near Ground3
+[node name="VentFrame" type="Polygon2D" parent="."]
+position = Vector2(2300, 490)
+color = Color(0.04, 0.04, 0.04, 1)
+polygon = PackedVector2Array(-15, -20, 15, -20, 15, 20, -15, 20)
+
+; Vent slat 1
+[node name="VentSlat1" type="Polygon2D" parent="."]
+position = Vector2(2300, 480)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-12, -1, 12, -1, 12, 1, -12, 1)
+
+; Vent slat 2
+[node name="VentSlat2" type="Polygon2D" parent="."]
+position = Vector2(2300, 486)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-12, -1, 12, -1, 12, 1, -12, 1)
+
+; Vent slat 3
+[node name="VentSlat3" type="Polygon2D" parent="."]
+position = Vector2(2300, 492)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-12, -1, 12, -1, 12, 1, -12, 1)
+
+; Vent slat 4
+[node name="VentSlat4" type="Polygon2D" parent="."]
+position = Vector2(2300, 498)
+color = Color(0.06, 0.06, 0.06, 1)
+polygon = PackedVector2Array(-12, -1, 12, -1, 12, 1, -12, 1)

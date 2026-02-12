@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Shader" path="res://Shaders/film_grain.gdshader" id="1_grain"]
+[ext_resource type="Shader" path="res://Shaders/chromatic_aberration.gdshader" id="2_aberration"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_grain"]
+shader = ExtResource("1_grain")
+shader_parameter/grain_intensity = 0.04
+shader_parameter/grain_scale = 3.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aberration"]
+shader = ExtResource("2_aberration")
+shader_parameter/aberration_strength = 1.0
+
+[node name="PostProcessing" type="CanvasLayer"]
+layer = 9
+
+[node name="FilmGrainRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_grain")
+
+[node name="ChromaticAberrationRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_aberration")

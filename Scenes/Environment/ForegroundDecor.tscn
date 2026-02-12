@@ -1,0 +1,87 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Visuals/SwayEffect.cs" id="1_sway"]
+
+[node name="ForegroundDecor" type="ParallaxBackground"]
+
+[node name="ForegroundLayer" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(1.2, 1.0)
+motion_mirroring = Vector2(4096, 0)
+
+;; --- Hanging Vines ---
+
+[node name="Vine1" type="Node2D" parent="ForegroundLayer"]
+position = Vector2(300, 0)
+script = ExtResource("1_sway")
+SwayAmount = 2.5
+SwaySpeed = 1.2
+
+[node name="VineShape" type="Polygon2D" parent="ForegroundLayer/Vine1"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(-4, -100, -2, -60, -5, -20, -3, 20, -6, 60, -4, 100, -7, 140, -5, 180, -8, 210, -10, 230, -14, 248, -18, 260, -15, 255, -11, 240, -8, 220, -5, 195, -2, 165, 0, 130, 2, 95, 1, 60, 3, 20, 1, -20, 3, -60, 4, -100)
+
+[node name="Vine2" type="Node2D" parent="ForegroundLayer"]
+position = Vector2(1200, 0)
+script = ExtResource("1_sway")
+SwayAmount = 3.0
+SwaySpeed = 1.0
+
+[node name="VineShape" type="Polygon2D" parent="ForegroundLayer/Vine2"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(-3, -100, -1, -50, -4, 0, -2, 50, -5, 100, -3, 150, -6, 200, -8, 240, -10, 275, -14, 300, -18, 320, -22, 335, -26, 345, -23, 340, -19, 325, -15, 305, -11, 280, -8, 250, -5, 215, -2, 175, 0, 135, 2, 95, 1, 50, 3, 0, 2, -50, 3, -100)
+
+[node name="Vine3" type="Node2D" parent="ForegroundLayer"]
+position = Vector2(2500, 0)
+script = ExtResource("1_sway")
+SwayAmount = 2.0
+SwaySpeed = 1.8
+
+[node name="VineShape" type="Polygon2D" parent="ForegroundLayer/Vine3"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(-3, -100, -1, -55, -4, -10, -2, 35, -5, 80, -3, 120, -6, 155, -8, 185, -12, 205, -16, 218, -13, 212, -9, 198, -6, 178, -3, 152, 0, 120, 2, 82, 1, 40, 3, -5, 2, -55, 3, -100)
+
+[node name="Vine4" type="Node2D" parent="ForegroundLayer"]
+position = Vector2(3500, 0)
+script = ExtResource("1_sway")
+SwayAmount = 3.5
+SwaySpeed = 0.8
+
+[node name="VineShape" type="Polygon2D" parent="ForegroundLayer/Vine4"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(-4, -100, -2, -45, -5, 10, -3, 65, -6, 120, -4, 175, -7, 230, -5, 280, -8, 320, -10, 350, -14, 375, -18, 390, -22, 400, -19, 395, -15, 380, -11, 358, -8, 330, -5, 295, -2, 255, 0, 210, 2, 165, 1, 115, 3, 60, 2, 5, 4, -50, 4, -100)
+
+;; --- Ground-Level Grass Tufts ---
+
+[node name="GrassTuft1" type="Polygon2D" parent="ForegroundLayer"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(100, 550, 104, 528, 108, 512, 112, 530, 116, 518, 120, 502, 124, 490, 128, 505, 132, 520, 136, 505, 140, 492, 144, 508, 148, 525, 152, 540, 155, 550, 155, 600, 100, 600)
+
+[node name="GrassTuft2" type="Polygon2D" parent="ForegroundLayer"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(700, 550, 704, 530, 708, 515, 712, 532, 716, 520, 720, 505, 724, 492, 728, 508, 732, 522, 736, 508, 740, 495, 744, 510, 748, 528, 752, 542, 755, 550, 755, 600, 700, 600)
+
+[node name="GrassTuft3" type="Polygon2D" parent="ForegroundLayer"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(1800, 550, 1804, 532, 1808, 518, 1812, 535, 1816, 522, 1820, 508, 1824, 495, 1828, 512, 1832, 525, 1836, 510, 1840, 498, 1844, 515, 1848, 530, 1852, 545, 1855, 550, 1855, 600, 1800, 600)
+
+[node name="GrassTuft4" type="Polygon2D" parent="ForegroundLayer"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(2800, 550, 2804, 535, 2808, 522, 2812, 538, 2816, 525, 2820, 510, 2824, 498, 2828, 515, 2832, 528, 2836, 512, 2840, 500, 2844, 518, 2848, 535, 2852, 545, 2855, 550, 2855, 600, 2800, 600)
+
+[node name="GrassTuft5" type="Polygon2D" parent="ForegroundLayer"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(3700, 550, 3704, 530, 3708, 515, 3712, 532, 3716, 518, 3720, 502, 3724, 488, 3728, 505, 3732, 520, 3736, 505, 3740, 490, 3744, 508, 3748, 525, 3752, 540, 3755, 550, 3755, 600, 3700, 600)
+
+;; --- Cobweb Corner Shape ---
+
+[node name="Cobweb" type="Polygon2D" parent="ForegroundLayer"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(0, -100, 0, -90, 5, -70, 12, -48, 22, -28, 35, -10, 50, 5, 68, 18, 88, 28, 110, 35, 115, 38, 108, 40, 85, 35, 62, 25, 42, 12, 25, -5, 12, -25, 5, -48, 2, -72, 0, -100)
+
+[node name="CobwebStrand1" type="Polygon2D" parent="ForegroundLayer"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(0, -100, 2, -95, 15, -55, 35, -18, 60, 12, 90, 32, 110, 35, 108, 37, 88, 34, 58, 15, 33, -15, 13, -52, 0, -95, -2, -100)
+
+[node name="CobwebStrand2" type="Polygon2D" parent="ForegroundLayer"]
+color = Color(0.031, 0.031, 0.031, 1)
+polygon = PackedVector2Array(0, -100, 2, -92, 8, -60, 18, -30, 32, -2, 52, 22, 75, 38, 78, 42, 72, 40, 48, 25, 28, 2, 15, -28, 5, -58, 0, -90, -2, -100)
