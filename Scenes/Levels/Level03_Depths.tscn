@@ -1,0 +1,351 @@
+[gd_scene load_steps=30 format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/Environment/EnvironmentTemplate.tscn" id="env_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Player/Player.tscn" id="player_1"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/DeathScreen.tscn" id="deathscreen_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/MovingPlatform.tscn" id="platform_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/DeathZone.tscn" id="deathzone_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/Checkpoint.tscn" id="checkpoint_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/PushableBox.tscn" id="box_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/PressurePlate.tscn" id="plate_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/LeverSwitch.tscn" id="lever_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/Door.tscn" id="door_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/FallingPlatform.tscn" id="falling_1"]
+
+[sub_resource type="RectangleShape2D" id="ground_start_shape"]
+size = Vector2(400, 200)
+
+[sub_resource type="RectangleShape2D" id="spike_timing_shape"]
+size = Vector2(900, 16)
+
+[sub_resource type="RectangleShape2D" id="ground_post_timing_shape"]
+size = Vector2(200, 200)
+
+[sub_resource type="RectangleShape2D" id="ground_crusher_shape"]
+size = Vector2(1000, 200)
+
+[sub_resource type="RectangleShape2D" id="crusher_spike_shape"]
+size = Vector2(120, 16)
+
+[sub_resource type="RectangleShape2D" id="ground_puzzle_shape"]
+size = Vector2(1900, 200)
+
+[sub_resource type="RectangleShape2D" id="upper_ledge_shape"]
+size = Vector2(600, 40)
+
+[sub_resource type="RectangleShape2D" id="ground_post_door_shape"]
+size = Vector2(400, 200)
+
+[sub_resource type="RectangleShape2D" id="spike_final_shape"]
+size = Vector2(800, 16)
+
+[sub_resource type="RectangleShape2D" id="ground_end_shape"]
+size = Vector2(500, 200)
+
+[sub_resource type="RectangleShape2D" id="wall_shape"]
+size = Vector2(40, 300)
+
+; === Root ===
+[node name="Level03_Depths" type="Node2D"]
+
+; === Environment ===
+[node name="Environment" parent="." instance=ExtResource("env_1")]
+
+; === Player ===
+[node name="Player" parent="." instance=ExtResource("player_1")]
+position = Vector2(100, 450)
+
+; === PlayerSpawn Marker ===
+[node name="PlayerSpawn" type="Marker2D" parent="."]
+position = Vector2(100, 450)
+
+; === DeathScreen ===
+[node name="DeathScreen" parent="." instance=ExtResource("deathscreen_1")]
+
+; ============================================================
+; SECTION 1: Start area (x:0-400)
+; ============================================================
+[node name="GroundStart" type="StaticBody2D" parent="."]
+position = Vector2(200, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="GroundStart"]
+shape = SubResource("ground_start_shape")
+
+[node name="Visual" type="ColorRect" parent="GroundStart"]
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+[node name="Checkpoint1" parent="." instance=ExtResource("checkpoint_1")]
+position = Vector2(200, 470)
+
+; ============================================================
+; SECTION 2: Timing challenge - vertical moving platforms (x:400-1400)
+; DeathZone below, 3 moving platforms moving vertically
+; ============================================================
+
+; Spike pit below
+[node name="SpikeTiming" parent="." instance=ExtResource("deathzone_1")]
+position = Vector2(900, 590)
+
+[node name="CollisionShape" type="CollisionShape2D" parent="SpikeTiming"]
+shape = SubResource("spike_timing_shape")
+
+[node name="Visual" type="Polygon2D" parent="SpikeTiming"]
+color = Color(0.039, 0.039, 0.039, 1)
+polygon = PackedVector2Array(-450, 0, -430, -16, -410, 0, -390, -16, -370, 0, -350, -16, -330, 0, -310, -16, -290, 0, -270, -16, -250, 0, -230, -16, -210, 0, -190, -16, -170, 0, -150, -16, -130, 0, -110, -16, -90, 0, -70, -16, -50, 0, -30, -16, -10, 0, 10, -16, 30, 0, 50, -16, 70, 0, 90, -16, 110, 0, 130, -16, 150, 0, 170, -16, 190, 0, 210, -16, 230, 0, 250, -16, 270, 0, 290, -16, 310, 0, 330, -16, 350, 0, 370, -16, 390, 0, 410, -16, 430, 0, 450, -16, 450, 0)
+
+; Moving Platform 1: starts at bottom, moves up
+; Position (550, 450), moves vertically to y=200 (relative: 0,-250)
+[node name="VertPlatform1" parent="." instance=ExtResource("platform_1")]
+position = Vector2(550, 450)
+AutoStart = true
+Speed = 80.0
+Waypoints = PackedVector2Array(0, 0, 0, -250)
+
+; Moving Platform 2: starts at top, moves down (staggered)
+; Position (800, 200), moves vertically to y=450 (relative: 0,250)
+[node name="VertPlatform2" parent="." instance=ExtResource("platform_1")]
+position = Vector2(800, 200)
+AutoStart = true
+Speed = 80.0
+Waypoints = PackedVector2Array(0, 0, 0, 250)
+
+; Moving Platform 3: starts at middle
+; Position (1050, 350), moves vertically between y=200 and y=450
+[node name="VertPlatform3" parent="." instance=ExtResource("platform_1")]
+position = Vector2(1050, 350)
+AutoStart = true
+Speed = 80.0
+Waypoints = PackedVector2Array(0, 0, 0, -150, 0, 100)
+
+; Landing area after timing section
+[node name="GroundPostTiming" type="StaticBody2D" parent="."]
+position = Vector2(1350, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="GroundPostTiming"]
+shape = SubResource("ground_post_timing_shape")
+
+[node name="Visual" type="ColorRect" parent="GroundPostTiming"]
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 100.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+[node name="Checkpoint2" parent="." instance=ExtResource("checkpoint_1")]
+position = Vector2(1500, 470)
+
+; ============================================================
+; SECTION 3: Crusher gauntlet (x:1500-2500)
+; Flat ground with static ceiling spike DeathZones above
+; ============================================================
+[node name="GroundCrusher" type="StaticBody2D" parent="."]
+position = Vector2(2000, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="GroundCrusher"]
+shape = SubResource("ground_crusher_shape")
+
+[node name="Visual" type="ColorRect" parent="GroundCrusher"]
+offset_left = -500.0
+offset_top = -100.0
+offset_right = 500.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+; Ceiling spikes (static DeathZones hanging from above)
+; Player must duck/time their run. Since there's no duck mechanic,
+; these are positioned to create narrow passages player must time through.
+; Crusher 1: DeathZone at ceiling, narrow gap
+[node name="CrusherSpike1" parent="." instance=ExtResource("deathzone_1")]
+position = Vector2(1700, 380)
+Type = 2
+
+[node name="CollisionShape" type="CollisionShape2D" parent="CrusherSpike1"]
+shape = SubResource("crusher_spike_shape")
+
+[node name="Visual" type="Polygon2D" parent="CrusherSpike1"]
+color = Color(0.039, 0.039, 0.039, 1)
+polygon = PackedVector2Array(-60, 0, -45, 16, -30, 0, -15, 16, 0, 0, 15, 16, 30, 0, 45, 16, 60, 0)
+
+; Crusher 2
+[node name="CrusherSpike2" parent="." instance=ExtResource("deathzone_1")]
+position = Vector2(2000, 380)
+Type = 2
+
+[node name="CollisionShape" type="CollisionShape2D" parent="CrusherSpike2"]
+shape = SubResource("crusher_spike_shape")
+
+[node name="Visual" type="Polygon2D" parent="CrusherSpike2"]
+color = Color(0.039, 0.039, 0.039, 1)
+polygon = PackedVector2Array(-60, 0, -45, 16, -30, 0, -15, 16, 0, 0, 15, 16, 30, 0, 45, 16, 60, 0)
+
+; Crusher 3
+[node name="CrusherSpike3" parent="." instance=ExtResource("deathzone_1")]
+position = Vector2(2300, 380)
+Type = 2
+
+[node name="CollisionShape" type="CollisionShape2D" parent="CrusherSpike3"]
+shape = SubResource("crusher_spike_shape")
+
+[node name="Visual" type="Polygon2D" parent="CrusherSpike3"]
+color = Color(0.039, 0.039, 0.039, 1)
+polygon = PackedVector2Array(-60, 0, -45, 16, -30, 0, -15, 16, 0, 0, 15, 16, 30, 0, 45, 16, 60, 0)
+
+[node name="Checkpoint3" parent="." instance=ExtResource("checkpoint_1")]
+position = Vector2(2600, 470)
+
+; ============================================================
+; SECTION 4: Multi-step puzzle (x:2600-4500)
+; PushableBox -> PressurePlate -> MovingPlatform -> Upper Ledge -> Lever -> Door
+; ============================================================
+[node name="GroundPuzzle" type="StaticBody2D" parent="."]
+position = Vector2(3550, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="GroundPuzzle"]
+shape = SubResource("ground_puzzle_shape")
+
+[node name="Visual" type="ColorRect" parent="GroundPuzzle"]
+offset_left = -950.0
+offset_top = -100.0
+offset_right = 950.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+; PushableBox at x:2800
+[node name="PushableBox1" parent="." instance=ExtResource("box_1")]
+position = Vector2(2800, 468)
+
+; PressurePlate at x:3200 — connected to PuzzlePlatform
+[node name="PressurePlate1" parent="." instance=ExtResource("plate_1")]
+position = Vector2(3200, 496)
+Targets = Array[NodePath]([NodePath("../PuzzlePlatform")])
+
+; MovingPlatform that activates when pressure plate is triggered
+; Carries player from ground level up to the ledge at y:200
+; Starts at (3400, 480), moves up to (3400, 200) -> relative (0, -280)
+[node name="PuzzlePlatform" parent="." instance=ExtResource("platform_1")]
+position = Vector2(3400, 480)
+AutoStart = false
+Speed = 120.0
+Waypoints = PackedVector2Array(0, 0, 0, -280)
+
+; Upper ledge at y:200 (x:3600-4200)
+[node name="UpperLedge" type="StaticBody2D" parent="."]
+position = Vector2(3900, 200)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="UpperLedge"]
+shape = SubResource("upper_ledge_shape")
+
+[node name="Visual" type="ColorRect" parent="UpperLedge"]
+offset_left = -300.0
+offset_top = -20.0
+offset_right = 300.0
+offset_bottom = 20.0
+color = Color(0, 0, 0, 1)
+
+; LeverSwitch on the upper ledge at x:3800 — connected to Door1
+[node name="Lever1" parent="." instance=ExtResource("lever_1")]
+position = Vector2(3800, 184)
+Targets = Array[NodePath]([NodePath("../Door1")])
+
+; Door blocking the path at x:4200 (on the ground level)
+; Wall next to door to force player to use upper path
+[node name="Door1" parent="." instance=ExtResource("door_1")]
+position = Vector2(4300, 436)
+
+; Wall to prevent just walking past (forces using the platform + lever puzzle)
+[node name="PuzzleWall" type="StaticBody2D" parent="."]
+position = Vector2(4300, 350)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="PuzzleWall"]
+shape = SubResource("wall_shape")
+
+[node name="Visual" type="ColorRect" parent="PuzzleWall"]
+offset_left = -20.0
+offset_top = -150.0
+offset_right = 20.0
+offset_bottom = 150.0
+color = Color(0, 0, 0, 1)
+
+[node name="Checkpoint4" parent="." instance=ExtResource("checkpoint_1")]
+position = Vector2(4600, 470)
+
+; ============================================================
+; SECTION 5: Post-door area + transition to final gauntlet (x:4500-4600)
+; ============================================================
+[node name="GroundPostDoor" type="StaticBody2D" parent="."]
+position = Vector2(4600, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="GroundPostDoor"]
+shape = SubResource("ground_post_door_shape")
+
+[node name="Visual" type="ColorRect" parent="GroundPostDoor"]
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+; ============================================================
+; SECTION 6: Final gauntlet - falling platforms over spikes (x:4800-5500)
+; ============================================================
+
+; DeathZone below
+[node name="SpikeFinal" parent="." instance=ExtResource("deathzone_1")]
+position = Vector2(5100, 590)
+
+[node name="CollisionShape" type="CollisionShape2D" parent="SpikeFinal"]
+shape = SubResource("spike_final_shape")
+
+[node name="Visual" type="Polygon2D" parent="SpikeFinal"]
+color = Color(0.039, 0.039, 0.039, 1)
+polygon = PackedVector2Array(-400, 0, -380, -16, -360, 0, -340, -16, -320, 0, -300, -16, -280, 0, -260, -16, -240, 0, -220, -16, -200, 0, -180, -16, -160, 0, -140, -16, -120, 0, -100, -16, -80, 0, -60, -16, -40, 0, -20, -16, 0, 0, 20, -16, 40, 0, 60, -16, 80, 0, 100, -16, 120, 0, 140, -16, 160, 0, 180, -16, 200, 0, 220, -16, 240, 0, 260, -16, 280, 0, 300, -16, 320, 0, 340, -16, 360, 0, 380, -16, 400, 0)
+
+; 4 FallingPlatforms in sequence
+[node name="FallingPlatform1" parent="." instance=ExtResource("falling_1")]
+position = Vector2(4900, 470)
+
+[node name="FallingPlatform2" parent="." instance=ExtResource("falling_1")]
+position = Vector2(5050, 470)
+
+[node name="FallingPlatform3" parent="." instance=ExtResource("falling_1")]
+position = Vector2(5200, 470)
+
+[node name="FallingPlatform4" parent="." instance=ExtResource("falling_1")]
+position = Vector2(5350, 470)
+
+; ============================================================
+; SECTION 7: Ending area (x:5500-6000)
+; Safe ground, slightly lighter feel — open space, no transition
+; ============================================================
+[node name="GroundEnd" type="StaticBody2D" parent="."]
+position = Vector2(5750, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="GroundEnd"]
+shape = SubResource("ground_end_shape")
+
+[node name="Visual" type="ColorRect" parent="GroundEnd"]
+offset_left = -250.0
+offset_top = -100.0
+offset_right = 250.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)

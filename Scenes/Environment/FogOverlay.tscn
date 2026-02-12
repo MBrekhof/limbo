@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Visuals/FogLayer.cs" id="1_fog"]
+[ext_resource type="Shader" path="res://Shaders/fog.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fog1"]
+shader = ExtResource("2_shader")
+shader_parameter/scroll_speed = Vector2(20, 5)
+shader_parameter/density = 0.3
+shader_parameter/color = Color(0.7, 0.7, 0.7, 0.2)
+shader_parameter/time_scale = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fog2"]
+shader = ExtResource("2_shader")
+shader_parameter/scroll_speed = Vector2(12, 3)
+shader_parameter/density = 0.25
+shader_parameter/color = Color(0.6, 0.6, 0.6, 0.15)
+shader_parameter/time_scale = 0.7
+
+[node name="FogOverlay" type="CanvasLayer"]
+layer = 5
+script = ExtResource("1_fog")
+ScrollSpeedX = 20.0
+ScrollSpeedY = 5.0
+Density = 0.3
+
+[node name="FogRect1" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_fog1")
+
+[node name="FogRect2" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_fog2")

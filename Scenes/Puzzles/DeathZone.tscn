@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Puzzles/DeathZone.cs" id="1_death"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_death"]
+size = Vector2(64, 16)
+
+[node name="DeathZone" type="Area2D"]
+collision_layer = 8
+collision_mask = 2
+monitoring = true
+monitorable = false
+script = ExtResource("1_death")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_death")
+
+[node name="Visual" type="Polygon2D" parent="."]
+color = Color(0.039, 0.039, 0.039, 1)
+polygon = PackedVector2Array(-32, 0, -24, -16, -16, 0, -8, -16, 0, 0, 8, -16, 16, 0, 24, -16, 32, 0)

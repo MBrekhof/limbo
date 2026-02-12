@@ -1,0 +1,280 @@
+[gd_scene load_steps=25 format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/Environment/EnvironmentTemplate.tscn" id="env_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Player/Player.tscn" id="player_1"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/DeathScreen.tscn" id="deathscreen_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/MovingPlatform.tscn" id="platform_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/DeathZone.tscn" id="deathzone_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/Checkpoint.tscn" id="checkpoint_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/LeverSwitch.tscn" id="lever_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/Door.tscn" id="door_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/FallingPlatform.tscn" id="falling_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/PressurePlate.tscn" id="plate_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/PushableBox.tscn" id="box_1"]
+[ext_resource type="Script" path="res://Scripts/Core/LevelTransition.cs" id="transition_1"]
+
+[sub_resource type="RectangleShape2D" id="ground1_shape"]
+size = Vector2(500, 200)
+
+[sub_resource type="RectangleShape2D" id="ground2_shape"]
+size = Vector2(200, 200)
+
+[sub_resource type="RectangleShape2D" id="spike1_shape"]
+size = Vector2(500, 16)
+
+[sub_resource type="RectangleShape2D" id="ground3_shape"]
+size = Vector2(1200, 200)
+
+[sub_resource type="RectangleShape2D" id="spike2_shape"]
+size = Vector2(600, 16)
+
+[sub_resource type="RectangleShape2D" id="ground4_shape"]
+size = Vector2(1200, 200)
+
+[sub_resource type="RectangleShape2D" id="ledge1_shape"]
+size = Vector2(100, 50)
+
+[sub_resource type="RectangleShape2D" id="ground5_shape"]
+size = Vector2(500, 200)
+
+[sub_resource type="RectangleShape2D" id="transition_shape"]
+size = Vector2(32, 128)
+
+[sub_resource type="RectangleShape2D" id="ground_landing_shape"]
+size = Vector2(200, 200)
+
+[sub_resource type="RectangleShape2D" id="ground_falling_end_shape"]
+size = Vector2(200, 200)
+
+; === Root ===
+[node name="Level02_Industrial" type="Node2D"]
+
+; === Environment ===
+[node name="Environment" parent="." instance=ExtResource("env_1")]
+
+; === Player ===
+[node name="Player" parent="." instance=ExtResource("player_1")]
+position = Vector2(100, 450)
+
+; === PlayerSpawn Marker ===
+[node name="PlayerSpawn" type="Marker2D" parent="."]
+position = Vector2(100, 450)
+
+; === DeathScreen ===
+[node name="DeathScreen" parent="." instance=ExtResource("deathscreen_1")]
+
+; ============================================================
+; SECTION 1: Start area (x:0-500)
+; ============================================================
+[node name="Ground1" type="StaticBody2D" parent="."]
+position = Vector2(250, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Ground1"]
+shape = SubResource("ground1_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground1"]
+offset_left = -250.0
+offset_top = -100.0
+offset_right = 250.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+; Checkpoint at start
+[node name="Checkpoint1" parent="." instance=ExtResource("checkpoint_1")]
+position = Vector2(200, 470)
+
+; ============================================================
+; SECTION 2: Moving platform over pit (x:500-1200)
+; ============================================================
+
+; DeathZone (spikes) at the bottom of the pit
+[node name="SpikePit1" parent="." instance=ExtResource("deathzone_1")]
+position = Vector2(850, 590)
+
+[node name="CollisionShape" type="CollisionShape2D" parent="SpikePit1"]
+shape = SubResource("spike1_shape")
+
+[node name="Visual" type="Polygon2D" parent="SpikePit1"]
+color = Color(0.039, 0.039, 0.039, 1)
+polygon = PackedVector2Array(-250, 0, -230, -16, -210, 0, -190, -16, -170, 0, -150, -16, -130, 0, -110, -16, -90, 0, -70, -16, -50, 0, -30, -16, -10, 0, 10, -16, 30, 0, 50, -16, 70, 0, 90, -16, 110, 0, 130, -16, 150, 0, 170, -16, 190, 0, 210, -16, 230, 0, 250, -16, 250, 0)
+
+; Landing platform on the far side of the pit
+[node name="GroundLanding1" type="StaticBody2D" parent="."]
+position = Vector2(1200, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="GroundLanding1"]
+shape = SubResource("ground2_shape")
+
+[node name="Visual" type="ColorRect" parent="GroundLanding1"]
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 100.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+; MovingPlatform: horizontal between (600,350) and (1100,350)
+; Position at start waypoint, waypoints relative
+[node name="MovingPlatform1" parent="." instance=ExtResource("platform_1")]
+position = Vector2(600, 400)
+AutoStart = true
+Waypoints = PackedVector2Array(0, 0, 500, 0)
+
+; Checkpoint at x:1300
+[node name="Checkpoint2" parent="." instance=ExtResource("checkpoint_1")]
+position = Vector2(1300, 470)
+
+; ============================================================
+; SECTION 3: Switch + Door puzzle (x:1300-2500)
+; ============================================================
+[node name="Ground3" type="StaticBody2D" parent="."]
+position = Vector2(1900, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Ground3"]
+shape = SubResource("ground3_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground3"]
+offset_left = -600.0
+offset_top = -100.0
+offset_right = 600.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+; LeverSwitch at x:1500 — player interacts to open Door1
+[node name="Lever1" parent="." instance=ExtResource("lever_1")]
+position = Vector2(1500, 484)
+Targets = Array[NodePath]([NodePath("../Door1")])
+
+; Door blocking the path at x:2000
+; Door is 32x128, center at ground level. Position so it blocks passage.
+; Door bottom at y=500, so center at y=436 (half of 128 = 64, 500-64=436)
+[node name="Door1" parent="." instance=ExtResource("door_1")]
+position = Vector2(2000, 436)
+
+; ============================================================
+; SECTION 4: Falling platforms (x:2500-3200)
+; ============================================================
+
+; DeathZone below the falling platforms
+[node name="SpikePit2" parent="." instance=ExtResource("deathzone_1")]
+position = Vector2(2850, 590)
+
+[node name="CollisionShape" type="CollisionShape2D" parent="SpikePit2"]
+shape = SubResource("spike2_shape")
+
+[node name="Visual" type="Polygon2D" parent="SpikePit2"]
+color = Color(0.039, 0.039, 0.039, 1)
+polygon = PackedVector2Array(-300, 0, -280, -16, -260, 0, -240, -16, -220, 0, -200, -16, -180, 0, -160, -16, -140, 0, -120, -16, -100, 0, -80, -16, -60, 0, -40, -16, -20, 0, 0, -16, 20, 0, 40, -16, 60, 0, 80, -16, 100, 0, 120, -16, 140, 0, 160, -16, 180, 0, 200, -16, 220, 0, 240, -16, 260, 0, 280, -16, 300, 0)
+
+; 3 FallingPlatforms across the gap (each 96px wide, spaced ~200px apart)
+[node name="FallingPlatform1" parent="." instance=ExtResource("falling_1")]
+position = Vector2(2600, 470)
+
+[node name="FallingPlatform2" parent="." instance=ExtResource("falling_1")]
+position = Vector2(2800, 470)
+
+[node name="FallingPlatform3" parent="." instance=ExtResource("falling_1")]
+position = Vector2(3000, 470)
+
+; Landing ground after falling platforms
+[node name="GroundFallingEnd" type="StaticBody2D" parent="."]
+position = Vector2(3200, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="GroundFallingEnd"]
+shape = SubResource("ground_falling_end_shape")
+
+[node name="Visual" type="ColorRect" parent="GroundFallingEnd"]
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 100.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+; Checkpoint at x:3300
+[node name="Checkpoint3" parent="." instance=ExtResource("checkpoint_1")]
+position = Vector2(3300, 470)
+
+; ============================================================
+; SECTION 5: Pressure plate + box puzzle (x:3300-4500)
+; ============================================================
+[node name="Ground4" type="StaticBody2D" parent="."]
+position = Vector2(3900, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Ground4"]
+shape = SubResource("ground4_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground4"]
+offset_left = -600.0
+offset_top = -100.0
+offset_right = 600.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+; Small ledge for the PushableBox (elevated)
+[node name="Ledge1" type="StaticBody2D" parent="."]
+position = Vector2(3500, 475)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Ledge1"]
+shape = SubResource("ledge1_shape")
+
+[node name="Visual" type="ColorRect" parent="Ledge1"]
+offset_left = -50.0
+offset_top = -25.0
+offset_right = 50.0
+offset_bottom = 25.0
+color = Color(0, 0, 0, 1)
+
+; PushableBox on the ledge
+[node name="PushableBox1" parent="." instance=ExtResource("box_1")]
+position = Vector2(3500, 418)
+
+; PressurePlate at x:3600 — connected to Door2
+[node name="PressurePlate1" parent="." instance=ExtResource("plate_1")]
+position = Vector2(3700, 496)
+Targets = Array[NodePath]([NodePath("../Door2")])
+
+; Door blocking path at x:4000
+[node name="Door2" parent="." instance=ExtResource("door_1")]
+position = Vector2(4100, 436)
+
+; ============================================================
+; SECTION 6: End area (x:4500-5000)
+; ============================================================
+[node name="Ground5" type="StaticBody2D" parent="."]
+position = Vector2(4750, 600)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Ground5"]
+shape = SubResource("ground5_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground5"]
+offset_left = -250.0
+offset_top = -100.0
+offset_right = 250.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+; === Level Transition to Level 03 ===
+[node name="LevelTransition" type="Area2D" parent="."]
+position = Vector2(4980, 450)
+collision_layer = 16
+collision_mask = 2
+monitoring = true
+monitorable = false
+script = ExtResource("transition_1")
+NextLevelPath = "res://Scenes/Levels/Level03_Depths.tscn"
+
+[node name="CollisionShape" type="CollisionShape2D" parent="LevelTransition"]
+shape = SubResource("transition_shape")

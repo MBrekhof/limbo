@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Visuals/ParallaxController.cs" id="1_ctrl"]
+
+[node name="ParallaxBackground" type="ParallaxBackground"]
+script = ExtResource("1_ctrl")
+AutoScrollSpeed = 5.0
+
+[node name="Layer1_DistantMountains" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(0.1, 0.1)
+motion_mirroring = Vector2(4096, 0)
+
+[node name="ColorRect" type="ColorRect" parent="Layer1_DistantMountains"]
+offset_left = 0.0
+offset_top = 200.0
+offset_right = 4096.0
+offset_bottom = 1080.0
+color = Color(0.667, 0.667, 0.667, 1)
+
+[node name="Layer2_MidTrees" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(0.3, 0.3)
+motion_mirroring = Vector2(4096, 0)
+
+[node name="ColorRect" type="ColorRect" parent="Layer2_MidTrees"]
+offset_left = 0.0
+offset_top = 350.0
+offset_right = 4096.0
+offset_bottom = 1080.0
+color = Color(0.4, 0.4, 0.4, 1)
+
+[node name="Layer3_NearDetails" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(0.5, 0.5)
+motion_mirroring = Vector2(4096, 0)
+
+[node name="ColorRect" type="ColorRect" parent="Layer3_NearDetails"]
+offset_left = 0.0
+offset_top = 500.0
+offset_right = 4096.0
+offset_bottom = 1080.0
+color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="Layer4_Foreground" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(0.8, 0.8)
+motion_mirroring = Vector2(4096, 0)
+
+[node name="ColorRect" type="ColorRect" parent="Layer4_Foreground"]
+offset_left = 0.0
+offset_top = 650.0
+offset_right = 4096.0
+offset_bottom = 1080.0
+color = Color(0.102, 0.102, 0.102, 1)

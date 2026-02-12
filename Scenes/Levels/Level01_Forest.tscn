@@ -1,0 +1,159 @@
+[gd_scene format=3 uid="uid://dxd58v46y6532"]
+
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/PushableBox.tscn" id="box_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/Checkpoint.tscn" id="checkpoint_1"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/DeathScreen.tscn" id="deathscreen_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Puzzles/DeathZone.tscn" id="deathzone_1"]
+[ext_resource type="PackedScene" path="res://Scenes/Environment/EnvironmentTemplate.tscn" id="env_1"]
+[ext_resource type="PackedScene" uid="uid://bplayer0scene" path="res://Scenes/Player/Player.tscn" id="player_1"]
+[ext_resource type="Script" uid="uid://bsw277qmcukxn" path="res://Scripts/Core/LevelTransition.cs" id="transition_1"]
+
+[sub_resource type="RectangleShape2D" id="ground1_shape"]
+size = Vector2(600, 200)
+
+[sub_resource type="RectangleShape2D" id="ground2_shape"]
+size = Vector2(650, 200)
+
+[sub_resource type="RectangleShape2D" id="ground3_shape"]
+size = Vector2(800, 200)
+
+[sub_resource type="RectangleShape2D" id="step_shape"]
+size = Vector2(100, 50)
+
+[sub_resource type="RectangleShape2D" id="spike_shape"]
+size = Vector2(200, 16)
+
+[sub_resource type="RectangleShape2D" id="ground4_shape"]
+size = Vector2(400, 200)
+
+[sub_resource type="RectangleShape2D" id="ground5_shape"]
+size = Vector2(800, 200)
+
+[sub_resource type="RectangleShape2D" id="transition_shape"]
+size = Vector2(32, 128)
+
+[node name="Level01_Forest" type="Node2D" unique_id=1194611572]
+
+[node name="Environment" parent="." unique_id=805944322 instance=ExtResource("env_1")]
+
+[node name="Player" parent="." unique_id=2009365887 instance=ExtResource("player_1")]
+position = Vector2(100, 450)
+
+[node name="PlayerSpawn" type="Marker2D" parent="." unique_id=333637713]
+position = Vector2(100, 450)
+
+[node name="DeathScreen" parent="." unique_id=2098304966 instance=ExtResource("deathscreen_1")]
+
+[node name="Ground1" type="StaticBody2D" parent="." unique_id=1992194094]
+position = Vector2(300, 600)
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Ground1" unique_id=2120964963]
+shape = SubResource("ground1_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground1" unique_id=599726608]
+offset_left = -300.0
+offset_top = -100.0
+offset_right = 300.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+[node name="Ground2" type="StaticBody2D" parent="." unique_id=2035652970]
+position = Vector2(1075, 600)
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Ground2" unique_id=60232183]
+shape = SubResource("ground2_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground2" unique_id=972752506]
+offset_left = -325.0
+offset_top = -100.0
+offset_right = 325.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+[node name="Checkpoint1" parent="." unique_id=1740769618 instance=ExtResource("checkpoint_1")]
+position = Vector2(900, 470)
+
+[node name="Ground3" type="StaticBody2D" parent="." unique_id=667958044]
+position = Vector2(1800, 600)
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Ground3" unique_id=1299668583]
+shape = SubResource("ground3_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground3" unique_id=1030837731]
+offset_left = -400.0
+offset_top = -100.0
+offset_right = 400.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+[node name="Step1" type="StaticBody2D" parent="." unique_id=390108045]
+position = Vector2(1450, 475)
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Step1" unique_id=829580878]
+shape = SubResource("step_shape")
+
+[node name="Visual" type="ColorRect" parent="Step1" unique_id=1519317936]
+offset_left = -50.0
+offset_top = -25.0
+offset_right = 50.0
+offset_bottom = 25.0
+color = Color(0, 0, 0, 1)
+
+[node name="PushableBox1" parent="." unique_id=1282258060 instance=ExtResource("box_1")]
+position = Vector2(1500, 418)
+
+[node name="SpikePit1" parent="." unique_id=1389654299 instance=ExtResource("deathzone_1")]
+position = Vector2(2300, 590)
+
+[node name="CollisionShape2" type="CollisionShape2D" parent="SpikePit1" unique_id=1790552631]
+shape = SubResource("spike_shape")
+
+[node name="Visual2" type="Polygon2D" parent="SpikePit1" unique_id=1818223355]
+color = Color(0.039, 0.039, 0.039, 1)
+polygon = PackedVector2Array(-100, 0, -85, -16, -70, 0, -55, -16, -40, 0, -25, -16, -10, 0, 5, -16, 20, 0, 35, -16, 50, 0, 65, -16, 80, 0, 95, -16, 100, 0)
+
+[node name="Ground4" type="StaticBody2D" parent="." unique_id=484047228]
+position = Vector2(2600, 600)
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Ground4" unique_id=770736868]
+shape = SubResource("ground4_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground4" unique_id=1726942692]
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+[node name="Checkpoint2" parent="." unique_id=1991023846 instance=ExtResource("checkpoint_1")]
+position = Vector2(2700, 470)
+
+[node name="Ground5" type="StaticBody2D" parent="." unique_id=256211848]
+position = Vector2(3100, 600)
+collision_mask = 0
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Ground5" unique_id=284226618]
+shape = SubResource("ground5_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground5" unique_id=880255151]
+offset_left = -400.0
+offset_top = -100.0
+offset_right = 400.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+[node name="LevelTransition" type="Area2D" parent="." unique_id=2003424603]
+position = Vector2(3480, 450)
+collision_layer = 16
+collision_mask = 2
+monitorable = false
+script = ExtResource("transition_1")
+NextLevelPath = "res://Scenes/Levels/Level02_Industrial.tscn"
+
+[node name="CollisionShape" type="CollisionShape2D" parent="LevelTransition" unique_id=407893369]
+shape = SubResource("transition_shape")
