@@ -8,12 +8,16 @@ public partial class MovingPlatform : AnimatableBody2D, IActivatable
     [Export] public float Speed { get; set; } = 100.0f;
     [Export] public bool AutoStart { get; set; } = true;
 
+    [Export] public float ReturnSpeed { get; set; } = 150.0f;
+
     public bool IsActive { get; private set; }
 
     private int _currentWaypointIndex;
     private bool _movingForward = true;
     private bool _moving;
+    private bool _returning;
     private Vector2 _startPosition;
+    private Tween? _returnTween;
 
     public override void _Ready()
     {
@@ -25,7 +29,7 @@ public partial class MovingPlatform : AnimatableBody2D, IActivatable
 
     public override void _PhysicsProcess(double delta)
     {
-        if (!_moving || Waypoints == null || Waypoints.Length == 0)
+        if (_returning || !_moving || Waypoints == null || Waypoints.Length == 0)
             return;
 
         Vector2 targetLocal = Waypoints[_currentWaypointIndex];
@@ -75,6 +79,8 @@ public partial class MovingPlatform : AnimatableBody2D, IActivatable
 
     public void Activate()
     {
+        _returnTween?.Kill();
+        _returning = false;
         IsActive = true;
         _moving = true;
     }
@@ -83,5 +89,28 @@ public partial class MovingPlatform : AnimatableBody2D, IActivatable
     {
         IsActive = false;
         _moving = false;
+        ReturnToStart();
+    }
+
+    private void ReturnToStart()
+    {
+        _returning = true;
+        float distance = Position.DistanceTo(_startPosition);
+        if (distance < 0.1f)
+        {
+            _returning = false;
+            return;
+        }
+
+        float duration = distance / ReturnSpeed;
+        _returnTween?.Kill();
+        _returnTween = CreateTween();
+        _returnTween.TweenProperty(this, "position", _startPosition, duration);
+        _returnTween.TweenCallback(Callable.From(() =>
+        {
+            _returning = false;
+            _currentWaypointIndex = 0;
+            _movingForward = true;
+        }));
     }
 }

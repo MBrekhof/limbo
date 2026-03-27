@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" path="res://Scripts/Visuals/SwayEffect.cs" id="1_sway"]
 
-[node name="ForegroundDecor" type="ParallaxBackground"]
+[node name="ForegroundDecor" type="Node2D"]
 
-[node name="ForegroundLayer" type="ParallaxLayer" parent="."]
-motion_scale = Vector2(1.2, 1.0)
-motion_mirroring = Vector2(4096, 0)
+[node name="ForegroundLayer" type="Parallax2D" parent="."]
+scroll_scale = Vector2(1.2, 1.0)
+repeat_size = Vector2(4096, 0)
 
 ;; --- Hanging Vines ---
 

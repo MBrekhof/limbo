@@ -2,17 +2,17 @@
 
 [ext_resource type="Script" path="res://Scripts/Visuals/ParallaxController.cs" id="1_ctrl"]
 
-[node name="ParallaxBackground" type="ParallaxBackground"]
+[node name="ParallaxBackground" type="Node2D"]
 script = ExtResource("1_ctrl")
 AutoScrollSpeed = 5.0
 
 ;; ============================================================
-;; Layer 1 — Distant Mountains (motion_scale 0.1)
+;; Layer 1 — Distant Mountains (scroll_scale 0.1)
 ;; ============================================================
 
-[node name="Layer1_DistantMountains" type="ParallaxLayer" parent="."]
-motion_scale = Vector2(0.1, 0.1)
-motion_mirroring = Vector2(4096, 0)
+[node name="Layer1_DistantMountains" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.1, 0.1)
+repeat_size = Vector2(4096, 0)
 
 [node name="MountainRange1" type="Polygon2D" parent="Layer1_DistantMountains"]
 color = Color(0.533, 0.533, 0.533, 1)
@@ -27,12 +27,12 @@ color = Color(0.6, 0.6, 0.6, 1)
 polygon = PackedVector2Array(0, 850, 120, 800, 280, 740, 440, 700, 600, 720, 760, 680, 920, 640, 1080, 600, 1240, 640, 1400, 700, 1560, 660, 1720, 600, 1880, 560, 2040, 600, 2200, 660, 2360, 700, 2520, 660, 2680, 620, 2840, 580, 3000, 620, 3160, 680, 3320, 720, 3480, 680, 3640, 720, 3800, 760, 3940, 810, 4096, 850, 4096, 1080, 0, 1080)
 
 ;; ============================================================
-;; Layer 2 — Dead Trees & Ruins (motion_scale 0.3)
+;; Layer 2 — Dead Trees & Ruins (scroll_scale 0.3)
 ;; ============================================================
 
-[node name="Layer2_MidTrees" type="ParallaxLayer" parent="."]
-motion_scale = Vector2(0.3, 0.3)
-motion_mirroring = Vector2(4096, 0)
+[node name="Layer2_MidTrees" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.3, 0.3)
+repeat_size = Vector2(4096, 0)
 
 [node name="DeadTree1" type="Polygon2D" parent="Layer2_MidTrees"]
 color = Color(0.333, 0.333, 0.333, 1)
@@ -59,12 +59,12 @@ color = Color(0.333, 0.333, 0.333, 1)
 polygon = PackedVector2Array(1800, 780, 1800, 560, 1805, 530, 1812, 505, 1820, 485, 1830, 470, 1842, 462, 1855, 458, 1870, 455, 1885, 458, 1895, 462, 1900, 468, 1905, 475, 1908, 485, 1905, 490, 1900, 482, 1895, 475, 1905, 500, 1908, 530, 1910, 545, 1912, 530, 1915, 505, 1918, 490, 1922, 480, 1928, 472, 1935, 468, 1945, 465, 1958, 468, 1968, 475, 1975, 485, 1978, 498, 1975, 510, 1972, 500, 1978, 530, 1980, 560, 1982, 590, 1985, 620, 1982, 650, 1978, 640, 1980, 665, 1985, 700, 1988, 740, 1985, 780, 1985, 1080, 1800, 1080)
 
 ;; ============================================================
-;; Layer 3 — Closer Vegetation (motion_scale 0.5)
+;; Layer 3 — Closer Vegetation (scroll_scale 0.5)
 ;; ============================================================
 
-[node name="Layer3_NearDetails" type="ParallaxLayer" parent="."]
-motion_scale = Vector2(0.5, 0.5)
-motion_mirroring = Vector2(4096, 0)
+[node name="Layer3_NearDetails" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.5, 0.5)
+repeat_size = Vector2(4096, 0)
 
 [node name="BushCluster1" type="Polygon2D" parent="Layer3_NearDetails"]
 color = Color(0.2, 0.2, 0.2, 1)
@@ -103,12 +103,12 @@ color = Color(0.2, 0.2, 0.2, 1)
 polygon = PackedVector2Array(3500, 780, 3500, 695, 3502, 685, 3505, 678, 3508, 672, 3512, 668, 3510, 662, 3508, 656, 3512, 652, 3516, 658, 3520, 665, 3522, 670, 3525, 678, 3528, 685, 3530, 695, 3530, 780, 3530, 1080, 3500, 1080)
 
 ;; ============================================================
-;; Layer 4 — Near Ground Detail (motion_scale 0.8)
+;; Layer 4 — Near Ground Detail (scroll_scale 0.8)
 ;; ============================================================
 
-[node name="Layer4_Foreground" type="ParallaxLayer" parent="."]
-motion_scale = Vector2(0.8, 0.8)
-motion_mirroring = Vector2(4096, 0)
+[node name="Layer4_Foreground" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.8, 0.8)
+repeat_size = Vector2(4096, 0)
 
 [node name="GrassPatch1" type="Polygon2D" parent="Layer4_Foreground"]
 color = Color(0.102, 0.102, 0.102, 1)
