@@ -4,7 +4,7 @@ namespace Limbo;
 
 public partial class GameManager : Node
 {
-    public static GameManager Instance { get; private set; }
+    public static GameManager? Instance { get; private set; }
 
     [Signal]
     public delegate void PlayerDiedEventHandler();
@@ -23,6 +23,12 @@ public partial class GameManager : Node
 
     public override void _Ready()
     {
+        if (Instance != null && Instance != this)
+        {
+            GD.PushWarning("Duplicate GameManager detected. Freeing this instance.");
+            QueueFree();
+            return;
+        }
         Instance = this;
         ProcessMode = ProcessModeEnum.Always;
     }

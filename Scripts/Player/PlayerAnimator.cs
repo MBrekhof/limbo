@@ -4,7 +4,7 @@ namespace Limbo;
 
 public partial class PlayerAnimator : Node2D
 {
-    private PlayerController _player;
+    private PlayerController _player = null!;
     private float _animTimer;
     private int _walkFrame;
     private float _breatheTimer;

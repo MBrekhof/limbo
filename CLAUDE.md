@@ -49,3 +49,8 @@ Switches/plates → set `[Export] NodePath[] Targets` → call `Activate()`/`Dea
 
 ### Visual Style
 Grayscale only. Foreground = black silhouettes. Background = layered grays via ParallaxBackground. Atmosphere = scrolling fog + dust particles + vignette overlay. Rendering uses `gl_compatibility` for broad support.
+
+## Git Conventions
+
+- Use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `refactor:`, `chore:`, etc.
+- Godot.NET.Sdk version in `limbo.csproj` must match the installed Godot editor version exactly.

@@ -19,7 +19,7 @@ public partial class LevelTransition : Area2D
     {
         if (body.IsInGroup(Constants.GroupPlayer))
         {
-            GameManager.Instance.RequestLevelTransition(NextLevelPath);
+            GameManager.Instance?.RequestLevelTransition(NextLevelPath);
         }
     }
 }

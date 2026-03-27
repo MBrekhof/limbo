@@ -23,16 +23,19 @@ public partial class PlayerController : CharacterBody2D
     private float _coyoteTimer;
     private float _jumpBufferTimer;
     private bool _isDead;
-    private Area2D _hazardDetector;
+    private Area2D? _hazardDetector;
 
     public override void _Ready()
     {
         AddToGroup(Constants.GroupPlayer);
         _gravity = (float)ProjectSettings.GetSetting("physics/2d/default_gravity");
 
-        _hazardDetector = GetNode<Area2D>("HazardDetector");
-        _hazardDetector.BodyEntered += OnHazardBodyEntered;
-        _hazardDetector.AreaEntered += OnHazardAreaEntered;
+        _hazardDetector = GetNodeOrNull<Area2D>("HazardDetector");
+        if (_hazardDetector != null)
+        {
+            _hazardDetector.BodyEntered += OnHazardBodyEntered;
+            _hazardDetector.AreaEntered += OnHazardAreaEntered;
+        }
     }
 
     public override void _PhysicsProcess(double delta)
@@ -106,11 +109,7 @@ public partial class PlayerController : CharacterBody2D
         }
 
         // Update animation state.
-        if (_isDead)
-        {
-            CurrentAnimState = AnimState.Death;
-        }
-        else if (!IsOnFloor() && Velocity.Y < 0)
+        if (!IsOnFloor() && Velocity.Y < 0)
         {
             CurrentAnimState = AnimState.Jump;
         }
@@ -143,7 +142,7 @@ public partial class PlayerController : CharacterBody2D
         Velocity = Vector2.Zero;
         CurrentAnimState = AnimState.Death;
         SetPhysicsProcess(false);
-        GameManager.Instance.OnPlayerDied();
+        GameManager.Instance?.OnPlayerDied();
     }
 
     public void Respawn(Vector2 position)

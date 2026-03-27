@@ -4,15 +4,17 @@ namespace Limbo;
 
 public partial class PressurePlate : Area2D
 {
-    [Export] public NodePath[] Targets { get; set; } = System.Array.Empty<NodePath>();
+    [Export] public NodePath[] Targets { get; set; } = [];
 
     private int _bodyCount;
     private bool _isActive;
-    private ColorRect _visual;
+    private ColorRect? _visual;
+    private IActivatable[] _resolvedTargets = [];
 
     public override void _Ready()
     {
-        _visual = GetNode<ColorRect>("Visual");
+        _visual = GetNodeOrNull<ColorRect>("Visual");
+        _resolvedTargets = TargetResolver.ResolveTargets(this, Targets);
 
         BodyEntered += OnBodyEntered;
         BodyExited += OnBodyExited;
@@ -50,26 +52,11 @@ public partial class PressurePlate : Area2D
 
         _isActive = active;
 
-        // Visual feedback: compress when active
         if (_visual != null)
         {
             _visual.Scale = _isActive ? new Vector2(1.0f, 0.5f) : new Vector2(1.0f, 1.0f);
         }
 
-        // Notify all targets
-        foreach (NodePath targetPath in Targets)
-        {
-            if (targetPath == null)
-                continue;
-
-            Node targetNode = GetNode(targetPath);
-            if (targetNode is IActivatable activatable)
-            {
-                if (_isActive)
-                    activatable.Activate();
-                else
-                    activatable.Deactivate();
-            }
-        }
+        TargetResolver.SetTargets(_resolvedTargets, _isActive);
     }
 }

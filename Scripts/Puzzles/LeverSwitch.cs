@@ -4,41 +4,28 @@ namespace Limbo;
 
 public partial class LeverSwitch : StaticBody2D, IInteractable
 {
-    [Export] public NodePath[] Targets { get; set; } = System.Array.Empty<NodePath>();
+    [Export] public NodePath[] Targets { get; set; } = [];
 
     private bool _isOn;
-    private ColorRect _visual;
+    private ColorRect? _visual;
+    private IActivatable[] _resolvedTargets = [];
 
     public override void _Ready()
     {
         AddToGroup(Constants.GroupInteractable);
-        _visual = GetNode<ColorRect>("Visual");
+        _visual = GetNodeOrNull<ColorRect>("Visual");
+        _resolvedTargets = TargetResolver.ResolveTargets(this, Targets);
     }
 
     public void Interact(Node2D interactor)
     {
         _isOn = !_isOn;
 
-        // Visually rotate the lever
         if (_visual != null)
         {
             _visual.RotationDegrees = _isOn ? 45.0f : 0.0f;
         }
 
-        // Activate or deactivate all targets
-        foreach (NodePath targetPath in Targets)
-        {
-            if (targetPath == null)
-                continue;
-
-            Node targetNode = GetNode(targetPath);
-            if (targetNode is IActivatable activatable)
-            {
-                if (_isOn)
-                    activatable.Activate();
-                else
-                    activatable.Deactivate();
-            }
-        }
+        TargetResolver.SetTargets(_resolvedTargets, _isOn);
     }
 }

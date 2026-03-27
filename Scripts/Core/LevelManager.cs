@@ -4,13 +4,19 @@ namespace Limbo;
 
 public partial class LevelManager : Node
 {
-    public static LevelManager Instance { get; private set; }
+    public static LevelManager? Instance { get; private set; }
 
-    private CanvasLayer _fadeLayer;
-    private ColorRect _fadeRect;
+    private CanvasLayer _fadeLayer = null!;
+    private ColorRect _fadeRect = null!;
 
     public override void _Ready()
     {
+        if (Instance != null && Instance != this)
+        {
+            GD.PushWarning("Duplicate LevelManager detected. Freeing this instance.");
+            QueueFree();
+            return;
+        }
         Instance = this;
         ProcessMode = ProcessModeEnum.Always;
 
@@ -27,7 +33,10 @@ public partial class LevelManager : Node
         _fadeLayer.AddChild(_fadeRect);
 
         // Connect to GameManager's level transition signal.
-        GameManager.Instance.LevelTransitionRequested += OnLevelTransitionRequested;
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.LevelTransitionRequested += OnLevelTransitionRequested;
+        }
     }
 
     public override void _ExitTree()
@@ -40,35 +49,47 @@ public partial class LevelManager : Node
 
     private async void OnLevelTransitionRequested(string levelPath)
     {
-        // Fade to black.
-        Tween fadeOut = CreateTween();
-        fadeOut.TweenProperty(_fadeRect, "color:a", 1.0f, 0.5f);
-        await ToSignal(fadeOut, Tween.SignalName.Finished);
-
-        // Reset checkpoint for the new level.
-        GameManager.Instance.ResetCheckpoint();
-
-        // Change scene.
-        GetTree().ChangeSceneToFile(levelPath);
-
-        // Wait one frame for the new scene to initialize.
-        await ToSignal(GetTree(), SceneTree.SignalName.TreeChanged);
-        await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-
-        // Find PlayerSpawn marker in the new level and set start position.
-        Node root = GetTree().CurrentScene;
-        if (root != null)
+        try
         {
-            Marker2D spawn = root.GetNodeOrNull<Marker2D>("PlayerSpawn");
-            if (spawn != null)
-            {
-                GameManager.Instance.LevelStartPosition = spawn.GlobalPosition;
-            }
-        }
+            // Fade to black.
+            Tween fadeOut = CreateTween();
+            fadeOut.TweenProperty(_fadeRect, "color:a", 1.0f, 0.5f);
+            await ToSignal(fadeOut, Tween.SignalName.Finished);
 
-        // Fade from black.
-        Tween fadeIn = CreateTween();
-        fadeIn.TweenProperty(_fadeRect, "color:a", 0.0f, 0.5f);
-        await ToSignal(fadeIn, Tween.SignalName.Finished);
+            if (!IsInsideTree()) return;
+
+            // Reset checkpoint for the new level.
+            GameManager.Instance?.ResetCheckpoint();
+
+            // Change scene.
+            GetTree().ChangeSceneToFile(levelPath);
+
+            // Wait one frame for the new scene to initialize.
+            await ToSignal(GetTree(), SceneTree.SignalName.TreeChanged);
+            if (!IsInsideTree()) return;
+
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            if (!IsInsideTree()) return;
+
+            // Find PlayerSpawn marker in the new level and set start position.
+            Node root = GetTree().CurrentScene;
+            if (root != null)
+            {
+                Marker2D? spawn = root.GetNodeOrNull<Marker2D>("PlayerSpawn");
+                if (spawn != null && GameManager.Instance != null)
+                {
+                    GameManager.Instance.LevelStartPosition = spawn.GlobalPosition;
+                }
+            }
+
+            // Fade from black.
+            Tween fadeIn = CreateTween();
+            fadeIn.TweenProperty(_fadeRect, "color:a", 0.0f, 0.5f);
+            await ToSignal(fadeIn, Tween.SignalName.Finished);
+        }
+        catch (System.Exception ex)
+        {
+            GD.PrintErr($"Level transition failed: {ex.Message}");
+        }
     }
 }

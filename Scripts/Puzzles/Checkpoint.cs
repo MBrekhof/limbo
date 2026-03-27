@@ -14,7 +14,10 @@ public partial class Checkpoint : Area2D
     {
         if (body.IsInGroup(Constants.GroupPlayer))
         {
-            GameManager.Instance.LastCheckpointPosition = GlobalPosition;
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.LastCheckpointPosition = GlobalPosition;
+            }
         }
     }
 }

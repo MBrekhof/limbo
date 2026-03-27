@@ -11,14 +11,14 @@ public partial class Door : StaticBody2D, IActivatable
 
     private Vector2 _closedPosition;
     private Vector2 _openPosition;
-    private Tween _tween;
-    private CollisionShape2D _collisionShape;
+    private Tween? _tween;
+    private CollisionShape2D? _collisionShape;
 
     public override void _Ready()
     {
         _closedPosition = Position;
         _openPosition = Position + new Vector2(0, OpenOffset);
-        _collisionShape = GetNode<CollisionShape2D>("CollisionShape");
+        _collisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape");
     }
 
     public void Activate()
@@ -39,22 +39,28 @@ public partial class Door : StaticBody2D, IActivatable
         AnimateDoor(_closedPosition, false);
     }
 
-    private void AnimateDoor(Vector2 targetPosition, bool disableCollision)
+    private void AnimateDoor(Vector2 targetPosition, bool opening)
     {
         _tween?.Kill();
         _tween = CreateTween();
         _tween.TweenProperty(this, "position", targetPosition, 1.0 / OpenSpeed);
 
-        if (disableCollision && _collisionShape != null)
+        if (_collisionShape != null)
         {
-            _tween.TweenCallback(Callable.From(() =>
+            if (opening)
             {
-                _collisionShape.Disabled = true;
-            }));
-        }
-        else if (!disableCollision && _collisionShape != null)
-        {
-            _collisionShape.Disabled = false;
+                _tween.TweenCallback(Callable.From(() =>
+                {
+                    _collisionShape.Disabled = true;
+                }));
+            }
+            else
+            {
+                _tween.TweenCallback(Callable.From(() =>
+                {
+                    _collisionShape.Disabled = false;
+                }));
+            }
         }
     }
 }

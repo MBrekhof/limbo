@@ -13,16 +13,16 @@ public partial class FallingPlatform : StaticBody2D
     private bool _falling;
     private float _shakeTimer;
     private float _respawnTimer;
-    private CollisionShape2D _collisionShape;
-    private ColorRect _visual;
-    private Area2D _detectionArea;
+    private CollisionShape2D? _collisionShape;
+    private ColorRect? _visual;
+    private Area2D _detectionArea = null!;
 
     public override void _Ready()
     {
         _originalPosition = Position;
-        _collisionShape = GetNode<CollisionShape2D>("CollisionShape");
-        _visual = GetNode<ColorRect>("Visual");
-        _detectionArea = GetNode<Area2D>("DetectionArea");
+        _collisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape");
+        _visual = GetNodeOrNull<ColorRect>("Visual");
+        _detectionArea = GetNodeOrNull<Area2D>("DetectionArea")!;
 
         _detectionArea.BodyEntered += OnBodyEntered;
     }

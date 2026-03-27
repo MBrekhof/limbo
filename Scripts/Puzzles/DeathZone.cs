@@ -21,9 +21,9 @@ public partial class DeathZone : Area2D
 
     private void OnBodyEntered(Node2D body)
     {
-        if (body.IsInGroup(Constants.GroupPlayer))
+        if (body is PlayerController player)
         {
-            GameManager.Instance.OnPlayerDied();
+            player.Die();
         }
     }
 }

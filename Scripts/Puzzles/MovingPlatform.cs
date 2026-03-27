@@ -4,7 +4,7 @@ namespace Limbo;
 
 public partial class MovingPlatform : AnimatableBody2D, IActivatable
 {
-    [Export] public Vector2[] Waypoints { get; set; } = System.Array.Empty<Vector2>();
+    [Export] public Vector2[] Waypoints { get; set; } = [];
     [Export] public float Speed { get; set; } = 100.0f;
     [Export] public bool AutoStart { get; set; } = true;
 
