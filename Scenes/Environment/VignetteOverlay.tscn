@@ -4,8 +4,8 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vig"]
 shader = ExtResource("1_vignette")
-shader_parameter/intensity = 0.7
-shader_parameter/softness = 0.4
+shader_parameter/intensity = 0.8
+shader_parameter/softness = 0.35
 
 [node name="VignetteOverlay" type="CanvasLayer"]
 layer = 10

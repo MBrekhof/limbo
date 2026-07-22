@@ -76,6 +76,10 @@ polygon = PackedVector2Array(-100, -100, 100, -100, 100, 100, -100, 100)
 
 ; === Environment ===
 [node name="Environment" parent="." instance=ExtResource("env_1")]
+AmbientColor = Color(0.55, 0.52, 0.5, 1)
+FogDensity = 0.25
+GodRayStrength = 0.18
+Signature = 2
 
 ; === Player ===
 [node name="Player" parent="." instance=ExtResource("player_1")]

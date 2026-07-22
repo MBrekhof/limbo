@@ -8,20 +8,35 @@ public partial class PlayerAnimator : Node2D
     private float _animTimer;
     private int _walkFrame;
     private float _breatheTimer;
+    private float _blinkTimer;
+    private Vector2 _squash = Vector2.One;
+    private AnimState _prevState = AnimState.Idle;
+    private GpuParticles2D _footDust = null!;
 
     // Character dimensions (matching collision shape: 24x56)
     private const float HeadRadius = 7f;
     private const float HeadY = -21f;
+    private const float FeetY = 28f;
+    private const float BlinkInterval = 4.2f;
+    private const float BlinkDuration = 0.13f;
 
     public override void _Ready()
     {
         _player = GetParent<PlayerController>();
+
+        // Foot dust lives on the player (not this node) so it ignores flip/squash.
+        _footDust = CreateFootDust();
+        _player.CallDeferred(Node.MethodName.AddChild, _footDust);
     }
 
     public override void _Process(double delta)
     {
-        _animTimer += (float)delta;
-        _breatheTimer += (float)delta;
+        float dt = (float)delta;
+        _animTimer += dt;
+        _breatheTimer += dt;
+        _blinkTimer += dt;
+        if (_blinkTimer > BlinkInterval)
+            _blinkTimer = 0;
 
         if (_player.CurrentAnimState == AnimState.Walk)
         {
@@ -29,6 +44,8 @@ public partial class PlayerAnimator : Node2D
             {
                 _walkFrame = (_walkFrame + 1) % 4;
                 _animTimer = 0;
+                if (_walkFrame % 2 == 0)
+                    EmitFootDust(0.4f);
             }
         }
         else
@@ -37,8 +54,63 @@ public partial class PlayerAnimator : Node2D
             _animTimer = 0;
         }
 
-        Scale = new Vector2(_player.FacingDirection >= 0 ? 1 : -1, 1);
+        // Squash & stretch impulses on state transitions.
+        AnimState state = _player.CurrentAnimState;
+        if (state != _prevState)
+        {
+            if (state == AnimState.Jump)
+            {
+                _squash = new Vector2(0.94f, 1.08f);
+            }
+            else if (_prevState == AnimState.Fall && state is AnimState.Idle or AnimState.Walk)
+            {
+                _squash = new Vector2(1.12f, 0.88f);
+                EmitFootDust(1f);
+            }
+            _prevState = state;
+        }
+        _squash = _squash.Lerp(Vector2.One, 1f - Mathf.Exp(-10f * dt));
+
+        Scale = new Vector2((_player.FacingDirection >= 0 ? 1 : -1) * _squash.X, _squash.Y);
+        // Keep the feet planted while squashing (scale pivots at the body center).
+        Position = new Vector2(0, FeetY * (1f - _squash.Y));
+
         QueueRedraw();
+    }
+
+    private void EmitFootDust(float amountRatio)
+    {
+        if (!_footDust.IsInsideTree())
+            return;
+        _footDust.AmountRatio = amountRatio;
+        _footDust.Restart();
+    }
+
+    private static GpuParticles2D CreateFootDust()
+    {
+        var mat = new ParticleProcessMaterial
+        {
+            Direction = new Vector3(0, -1, 0),
+            Spread = 70f,
+            Gravity = new Vector3(0, -20, 0),
+            InitialVelocityMin = 15f,
+            InitialVelocityMax = 40f,
+            ScaleMin = 0.05f,
+            ScaleMax = 0.12f,
+            Color = new Color(0.45f, 0.45f, 0.45f, 0.5f),
+        };
+        return new GpuParticles2D
+        {
+            Position = new Vector2(0, FeetY - 2),
+            OneShot = true,
+            Emitting = false,
+            Explosiveness = 1f,
+            Amount = 8,
+            Lifetime = 0.45f,
+            LocalCoords = false,
+            ProcessMaterial = mat,
+            Texture = SignatureParticles.MakeRadialDot(32),
+        };
     }
 
     public override void _Draw()
@@ -87,6 +159,22 @@ public partial class PlayerAnimator : Node2D
         DrawPolygon(points, new Color[] { color });
     }
 
+    /// <summary>Two glowing eyes on the facing side of the head; halo + core reads as glow without bloom.</summary>
+    private void DrawEyes(float headX, float headY)
+    {
+        if (_blinkTimer < BlinkDuration)
+            return;
+
+        var halo = new Color(0.92f, 0.94f, 0.97f, 0.35f);
+        var core = new Color(0.92f, 0.94f, 0.97f);
+        Vector2 back = new(headX + 2.2f, headY - 1f);
+        Vector2 front = new(headX + 5.0f, headY - 1f);
+        DrawCircle(back, 1.8f, halo);
+        DrawCircle(front, 1.6f, halo);
+        DrawCircle(back, 1.0f, core);
+        DrawCircle(front, 0.9f, core);
+    }
+
     // -- IDLE --
 
     private void DrawIdle(Color color)
@@ -105,6 +193,7 @@ public partial class PlayerAnimator : Node2D
         DrawRect(color, -5, 26, 0, 28);                                    // Left foot
         DrawRect(color, 1, 8, 4, 26);                                      // Right leg
         DrawRect(color, 0, 26, 5, 28);                                     // Right foot
+        DrawEyes(0, HeadY + b);
     }
 
     // -- WALK --
@@ -132,6 +221,8 @@ public partial class PlayerAnimator : Node2D
                 DrawWalkStride(color, bob, forward: false);
                 break;
         }
+
+        DrawEyes(1, HeadY + bob);
     }
 
     private void DrawWalkPassing(Color color, float bob)
@@ -197,6 +288,7 @@ public partial class PlayerAnimator : Node2D
         // Right leg tucked
         DrawPoly(color, new(1, 4), new(4, 4), new(4, 10), new(8, 16), new(6, 18), new(1, 12));
         DrawRect(color, 5, 16, 9, 18);
+        DrawEyes(0, HeadY - 1);
     }
 
     // -- FALL --
@@ -221,6 +313,7 @@ public partial class PlayerAnimator : Node2D
         DrawQuad(color, new(1, 10), new(4, 10), new(6, 20), new(3, 20));
         DrawQuad(color, new(3, 20), new(6, 20), new(5, 28), new(2, 28));
         DrawRect(color, 1, 26, 6, 28);
+        DrawEyes(0, HeadY);
     }
 
     // -- DEATH --

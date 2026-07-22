@@ -57,6 +57,10 @@ polygon = PackedVector2Array(-400, -100, 400, -100, 400, 100, -400, 100)
 [node name="Level01_Forest" type="Node2D" unique_id=1194611572]
 
 [node name="Environment" parent="." unique_id=805944322 instance=ExtResource("env_1")]
+AmbientColor = Color(0.6, 0.65, 0.7, 1)
+FogDensity = 0.3
+GodRayStrength = 0.35
+Signature = 1
 
 [node name="Player" parent="." unique_id=2009365887 instance=ExtResource("player_1")]
 position = Vector2(100, 450)

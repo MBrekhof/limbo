@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="PackedScene" path="res://Scenes/Environment/ParallaxBackground.tscn" id="1_parallax"]
 [ext_resource type="PackedScene" path="res://Scenes/Environment/FogOverlay.tscn" id="2_fog"]
@@ -7,8 +7,12 @@
 [ext_resource type="Script" path="res://Scripts/Visuals/AmbientLight.cs" id="5_ambient"]
 [ext_resource type="PackedScene" path="res://Scenes/Environment/PostProcessing.tscn" id="postproc_1"]
 [ext_resource type="PackedScene" path="res://Scenes/Environment/ForegroundDecor.tscn" id="7_fgdecor"]
+[ext_resource type="Script" path="res://Scripts/Visuals/AtmosphereController.cs" id="8_atmo"]
+[ext_resource type="PackedScene" path="res://Scenes/Environment/GodRays.tscn" id="9_godrays"]
+[ext_resource type="Script" path="res://Scripts/Visuals/SignatureParticles.cs" id="10_sig"]
 
 [node name="EnvironmentTemplate" type="Node"]
+script = ExtResource("8_atmo")
 
 [node name="ParallaxBackground" parent="." instance=ExtResource("1_parallax")]
 
@@ -18,6 +22,16 @@
 layer = 3
 
 [node name="DustParticles" parent="DustParticlesLayer" instance=ExtResource("3_dust")]
+
+[node name="SignatureParticlesLayer" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="SignatureParticles" type="GPUParticles2D" parent="SignatureParticlesLayer"]
+position = Vector2(960, 540)
+emitting = false
+script = ExtResource("10_sig")
+
+[node name="GodRays" parent="." instance=ExtResource("9_godrays")]
 
 [node name="PostProcessing" parent="." instance=ExtResource("postproc_1")]
 

@@ -1,6 +1,13 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Visuals/ParallaxController.cs" id="1_ctrl"]
+[ext_resource type="Shader" path="res://Shaders/depth_blur.gdshader" id="2_blur"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blur"]
+shader = ExtResource("2_blur")
+shader_parameter/blur_radius = 3.0
+shader_parameter/haze_color = Color(0.55, 0.57, 0.62, 1)
+shader_parameter/haze_amount = 0.22
 
 [node name="ParallaxBackground" type="Node2D"]
 script = ExtResource("1_ctrl")
@@ -57,6 +64,22 @@ polygon = PackedVector2Array(600, 780, 600, 520, 605, 490, 610, 470, 615, 460, 6
 [node name="Ruin2" type="Polygon2D" parent="Layer2_MidTrees"]
 color = Color(0.333, 0.333, 0.333, 1)
 polygon = PackedVector2Array(1800, 780, 1800, 560, 1805, 530, 1812, 505, 1820, 485, 1830, 470, 1842, 462, 1855, 458, 1870, 455, 1885, 458, 1895, 462, 1900, 468, 1905, 475, 1908, 485, 1905, 490, 1900, 482, 1895, 475, 1905, 500, 1908, 530, 1910, 545, 1912, 530, 1915, 505, 1918, 490, 1922, 480, 1928, 472, 1935, 468, 1945, 465, 1958, 468, 1968, 475, 1975, 485, 1978, 498, 1975, 510, 1972, 500, 1978, 530, 1980, 560, 1982, 590, 1985, 620, 1982, 650, 1978, 640, 1980, 665, 1985, 700, 1988, 740, 1985, 780, 1985, 1080, 1800, 1080)
+
+;; ============================================================
+;; Depth blur — screen-fixed rect that blurs + hazes everything
+;; drawn so far (Layers 1-2); later layers stay sharp.
+;; ============================================================
+
+[node name="DepthBlur" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0, 0)
+
+[node name="BlurRect" type="ColorRect" parent="DepthBlur"]
+offset_left = -480.0
+offset_top = -270.0
+offset_right = 2400.0
+offset_bottom = 1350.0
+mouse_filter = 2
+material = SubResource("ShaderMaterial_blur")
 
 ;; ============================================================
 ;; Layer 3 — Closer Vegetation (scroll_scale 0.5)
