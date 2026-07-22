@@ -10,6 +10,10 @@ shader_parameter/haze_color = Color(0.55, 0.57, 0.62, 1)
 shader_parameter/haze_amount = 0.22
 
 [node name="ParallaxBackground" type="Node2D"]
+; z -100: EnvironmentTemplate's plain-Node root detaches this subtree from the level's
+; canvas-item tree, so it draws AFTER (on top of) gameplay; negative z restores the old
+; CanvasLayer(-100) behind-everything behavior from before the Parallax2D migration.
+z_index = -100
 script = ExtResource("1_ctrl")
 AutoScrollSpeed = 5.0
 
