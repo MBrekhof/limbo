@@ -13,12 +13,16 @@ public partial class PlayerAnimator : Node2D
     private AnimState _prevState = AnimState.Idle;
     private GpuParticles2D _footDust = null!;
 
-    // Character dimensions (matching collision shape: 24x56)
-    private const float HeadRadius = 7f;
-    private const float HeadY = -21f;
+    // Character dimensions (matching collision shape: 24x56).
+    // Child proportions: oversized head, narrow sloped shoulders, short tapered limbs.
+    private const float HeadRadius = 8.5f;
+    private const float HeadY = -19f;
     private const float FeetY = 28f;
     private const float BlinkInterval = 4.2f;
     private const float BlinkDuration = 0.13f;
+
+    // The game's single saturated accent — reserved for the player's cap (see CLAUDE.md Visual Style).
+    private static readonly Color CapColor = new(0.95f, 0.76f, 0.12f);
 
     public override void _Ready()
     {
@@ -167,12 +171,29 @@ public partial class PlayerAnimator : Node2D
 
         var halo = new Color(0.92f, 0.94f, 0.97f, 0.35f);
         var core = new Color(0.92f, 0.94f, 0.97f);
-        Vector2 back = new(headX + 2.2f, headY - 1f);
-        Vector2 front = new(headX + 5.0f, headY - 1f);
-        DrawCircle(back, 1.8f, halo);
-        DrawCircle(front, 1.6f, halo);
-        DrawCircle(back, 1.0f, core);
-        DrawCircle(front, 0.9f, core);
+        Vector2 back = new(headX + 2.6f, headY - 1.4f);
+        Vector2 front = new(headX + 6.0f, headY - 1.4f);
+        DrawCircle(back, 1.9f, halo);
+        DrawCircle(front, 1.7f, halo);
+        DrawCircle(back, 1.05f, core);
+        DrawCircle(front, 0.95f, core);
+    }
+
+    /// <summary>Yellow cap (the single accent color) hugging the top of the head, plus hair wisps at the back.</summary>
+    private void DrawCapAndHair(float x, float y)
+    {
+        // Hair wisps poking out under the cap's back edge (drawn first, behind the cap).
+        DrawPoly(Colors.Black,
+            new(x - 7.5f, y - 2.5f), new(x - 11f, y - 1f), new(x - 8f, y + 0.5f),
+            new(x - 9.5f, y + 2.5f), new(x - 7f, y + 2f));
+        // Dome sitting slightly proud of the scalp (head circle chord is at y - 3).
+        DrawPoly(CapColor,
+            new(x - 8.1f, y - 3f), new(x - 7.4f, y - 5.8f), new(x - 5.2f, y - 8.2f),
+            new(x - 2f, y - 9.6f), new(x + 2f, y - 9.6f), new(x + 5.2f, y - 8.2f),
+            new(x + 7.4f, y - 5.8f), new(x + 8.1f, y - 3f));
+        // Brim pointing the way the player faces.
+        DrawQuad(CapColor, new(x + 6.5f, y - 4.2f), new(x + 12.5f, y - 3.6f),
+                           new(x + 12.5f, y - 2.4f), new(x + 6.5f, y - 2.6f));
     }
 
     // -- IDLE --
@@ -180,20 +201,25 @@ public partial class PlayerAnimator : Node2D
     private void DrawIdle(Color color)
     {
         float b = Mathf.Sin(_breatheTimer * 2f) * 0.5f;
+        const float hx = 1.5f; // hunch: head sits forward of the spine
 
-        DrawHead(color, 0, HeadY + b);
-        DrawRect(color, -2, -14 + b, 2, -11 + b);                         // Neck
-        DrawQuad(color, new(-6, -11 + b), new(6, -11 + b),
-                        new(4, 8 + b), new(-4, 8 + b));                   // Torso
-        DrawQuad(color, new(-6, -11 + b), new(-8, -11 + b),
-                        new(-9, 4 + b), new(-6, 4 + b));                  // Left arm
-        DrawQuad(color, new(6, -11 + b), new(8, -11 + b),
-                        new(9, 4 + b), new(6, 4 + b));                    // Right arm
-        DrawRect(color, -4, 8, -1, 26);                                    // Left leg
-        DrawRect(color, -5, 26, 0, 28);                                    // Left foot
-        DrawRect(color, 1, 8, 4, 26);                                      // Right leg
-        DrawRect(color, 0, 26, 5, 28);                                     // Right foot
-        DrawEyes(0, HeadY + b);
+        DrawHead(color, hx, HeadY + b);
+        DrawQuad(color, new(-0.5f, -12f + b), new(3.5f, -12f + b),
+                        new(3f, -9f + b), new(0f, -9f + b));               // Neck (mostly behind head)
+        DrawPoly(color, new(-4f, -10.5f + b), new(5f, -10.5f + b), new(5.5f, -6f + b),
+                        new(4f, 10f + b), new(-4f, 10f + b), new(-4.8f, -6f + b)); // Torso, sloped shoulders
+        DrawQuad(color, new(-4.2f, -9f + b), new(-6.2f, -9f + b),
+                        new(-6.8f, 7f + b), new(-5.4f, 7f + b));           // Left arm (tapered)
+        DrawQuad(color, new(5f, -9f + b), new(7f, -9f + b),
+                        new(7.4f, 7f + b), new(6f, 7f + b));               // Right arm (tapered)
+        DrawQuad(color, new(-3.6f, 10f), new(-0.8f, 10f),
+                        new(-1.2f, 26f), new(-3.4f, 26f));                 // Left leg (short, tapered)
+        DrawRect(color, -4.5f, 26f, 0f, 28f);                              // Left foot
+        DrawQuad(color, new(0.8f, 10f), new(3.6f, 10f),
+                        new(3.4f, 26f), new(1.2f, 26f));                   // Right leg
+        DrawRect(color, 0.5f, 26f, 5f, 28f);                               // Right foot
+        DrawCapAndHair(hx, HeadY + b);
+        DrawEyes(hx, HeadY + b);
     }
 
     // -- WALK --
@@ -201,12 +227,13 @@ public partial class PlayerAnimator : Node2D
     private void DrawWalk(Color color, int frame)
     {
         float bob = (frame == 1 || frame == 3) ? -1f : 0f;
+        const float hx = 2.5f; // stronger forward lean while moving
 
-        DrawHead(color, 1, HeadY + bob);
-        DrawQuad(color, new(-1, -14 + bob), new(3, -14 + bob),
-                        new(2, -11 + bob), new(-1, -11 + bob));            // Neck
-        DrawQuad(color, new(-5, -11 + bob), new(7, -11 + bob),
-                        new(5, 8 + bob), new(-3, 8 + bob));               // Torso
+        DrawHead(color, hx, HeadY + bob);
+        DrawQuad(color, new(0.5f, -12f + bob), new(4.5f, -12f + bob),
+                        new(4f, -9f + bob), new(1f, -9f + bob));           // Neck
+        DrawPoly(color, new(-3f, -10.5f + bob), new(6f, -10.5f + bob), new(6f, -6f + bob),
+                        new(4.5f, 10f + bob), new(-3.5f, 10f + bob), new(-4f, -6f + bob)); // Torso leaning in
 
         switch (frame)
         {
@@ -222,19 +249,20 @@ public partial class PlayerAnimator : Node2D
                 break;
         }
 
-        DrawEyes(1, HeadY + bob);
+        DrawCapAndHair(hx, HeadY + bob);
+        DrawEyes(hx, HeadY + bob);
     }
 
     private void DrawWalkPassing(Color color, float bob)
     {
-        DrawRect(color, -3, 8, 0, 25);                                     // Left leg
-        DrawRect(color, -4, 25, 1, 28);                                    // Left foot
-        DrawRect(color, 1, 8, 3, 25);                                      // Right leg
-        DrawRect(color, 0, 25, 5, 28);                                     // Right foot
-        DrawQuad(color, new(-5, -11 + bob), new(-7, -11 + bob),
-                        new(-8, 2 + bob), new(-5, 2 + bob));              // Left arm
-        DrawQuad(color, new(7, -11 + bob), new(9, -11 + bob),
-                        new(9, 2 + bob), new(7, 2 + bob));                // Right arm
+        DrawQuad(color, new(-3f, 10f), new(-0.5f, 10f), new(-1f, 25f), new(-3f, 25f));   // Left leg
+        DrawRect(color, -4f, 25f, 1f, 28f);                                              // Left foot
+        DrawQuad(color, new(1f, 10f), new(3.5f, 10f), new(3f, 25f), new(1.2f, 25f));     // Right leg
+        DrawRect(color, 0f, 25f, 5f, 28f);                                               // Right foot
+        DrawQuad(color, new(-3.2f, -9f + bob), new(-5.2f, -9f + bob),
+                        new(-6f, 3f + bob), new(-4.6f, 3f + bob));                       // Left arm
+        DrawQuad(color, new(6f, -9f + bob), new(8f, -9f + bob),
+                        new(8.2f, 3f + bob), new(6.6f, 3f + bob));                       // Right arm
     }
 
     private void DrawWalkStride(Color color, float bob, bool forward)
@@ -242,32 +270,32 @@ public partial class PlayerAnimator : Node2D
         if (forward)
         {
             // Left leg forward
-            DrawPoly(color, new(-3, 8), new(0, 8), new(3, 18), new(0, 26), new(-3, 26), new(-3, 18));
-            DrawQuad(color, new(-3, 26), new(2, 26), new(2, 28), new(-4, 28));
+            DrawPoly(color, new(-3f, 10f), new(0f, 10f), new(3f, 18f), new(0f, 26f), new(-3f, 26f), new(-3f, 18f));
+            DrawQuad(color, new(-3f, 26f), new(2f, 26f), new(2f, 28f), new(-4f, 28f));
             // Right leg back
-            DrawPoly(color, new(1, 8), new(4, 8), new(2, 18), new(-1, 26), new(-4, 26), new(0, 18));
-            DrawRect(color, -5, 26, 0, 28);
+            DrawPoly(color, new(1f, 10f), new(4f, 10f), new(2f, 18f), new(-1f, 26f), new(-4f, 26f), new(0f, 18f));
+            DrawRect(color, -5f, 26f, 0f, 28f);
             // Left arm back
-            DrawQuad(color, new(-5, -11 + bob), new(-7, -11 + bob),
-                            new(-10, 2 + bob), new(-7, 2 + bob));
+            DrawQuad(color, new(-3.2f, -9f + bob), new(-5.2f, -9f + bob),
+                            new(-8f, 2f + bob), new(-5.6f, 2f + bob));
             // Right arm forward
-            DrawQuad(color, new(7, -11 + bob), new(9, -11 + bob),
-                            new(11, -2 + bob), new(8, -2 + bob));
+            DrawQuad(color, new(6f, -9f + bob), new(8f, -9f + bob),
+                            new(10.5f, -2f + bob), new(7.5f, -2f + bob));
         }
         else
         {
             // Right leg forward
-            DrawPoly(color, new(1, 8), new(4, 8), new(7, 18), new(4, 26), new(1, 26), new(1, 18));
-            DrawQuad(color, new(1, 26), new(6, 26), new(6, 28), new(0, 28));
+            DrawPoly(color, new(1f, 10f), new(4f, 10f), new(7f, 18f), new(4f, 26f), new(1f, 26f), new(1f, 18f));
+            DrawQuad(color, new(1f, 26f), new(6f, 26f), new(6f, 28f), new(0f, 28f));
             // Left leg back
-            DrawPoly(color, new(-3, 8), new(0, 8), new(-2, 18), new(-5, 26), new(-7, 26), new(-4, 18));
-            DrawRect(color, -8, 26, -3, 28);
+            DrawPoly(color, new(-3f, 10f), new(0f, 10f), new(-2f, 18f), new(-5f, 26f), new(-7f, 26f), new(-4f, 18f));
+            DrawRect(color, -8f, 26f, -3f, 28f);
             // Right arm back
-            DrawQuad(color, new(7, -11 + bob), new(9, -11 + bob),
-                            new(6, 2 + bob), new(4, 2 + bob));
+            DrawQuad(color, new(6f, -9f + bob), new(8f, -9f + bob),
+                            new(5f, 2f + bob), new(3f, 2f + bob));
             // Left arm forward
-            DrawQuad(color, new(-5, -11 + bob), new(-7, -11 + bob),
-                            new(-4, -2 + bob), new(-2, -2 + bob));
+            DrawQuad(color, new(-3.2f, -9f + bob), new(-5.2f, -9f + bob),
+                            new(-2.5f, -2f + bob), new(-0.5f, -2f + bob));
         }
     }
 
@@ -275,45 +303,45 @@ public partial class PlayerAnimator : Node2D
 
     private void DrawJump(Color color)
     {
-        DrawHead(color, 0, HeadY - 1);
-        DrawRect(color, -2, -15, 2, -12);                                  // Neck
-        DrawQuad(color, new(-6, -12), new(6, -12),
-                        new(4, 4), new(-4, 4));                            // Torso
-        // Arms reaching up
-        DrawQuad(color, new(-6, -12), new(-8, -12), new(-10, -20), new(-7, -20));
-        DrawQuad(color, new(6, -12), new(8, -12), new(10, -20), new(7, -20));
+        DrawHead(color, 1f, HeadY - 1);
+        DrawQuad(color, new(-0.5f, -13f), new(3.5f, -13f), new(3f, -10f), new(0f, -10f)); // Neck
+        DrawQuad(color, new(-4f, -11.5f), new(5f, -11.5f), new(4f, 6f), new(-3.5f, 6f));  // Torso
+        // Arms reaching up (tapered)
+        DrawQuad(color, new(-4f, -11f), new(-6f, -11f), new(-8.5f, -20f), new(-6.8f, -20f));
+        DrawQuad(color, new(5f, -11f), new(7f, -11f), new(9.5f, -20f), new(7.8f, -20f));
         // Left leg tucked
-        DrawPoly(color, new(-4, 4), new(-1, 4), new(-1, 12), new(-6, 18), new(-8, 16), new(-4, 10));
-        DrawRect(color, -9, 16, -5, 18);
+        DrawPoly(color, new(-3.5f, 6f), new(-0.5f, 6f), new(-0.5f, 13f), new(-5.5f, 19f), new(-7.5f, 17f), new(-3.5f, 11f));
+        DrawRect(color, -8.5f, 17f, -4.5f, 19f);
         // Right leg tucked
-        DrawPoly(color, new(1, 4), new(4, 4), new(4, 10), new(8, 16), new(6, 18), new(1, 12));
-        DrawRect(color, 5, 16, 9, 18);
-        DrawEyes(0, HeadY - 1);
+        DrawPoly(color, new(0.5f, 6f), new(3.5f, 6f), new(3.5f, 11f), new(7.5f, 17f), new(5.5f, 19f), new(0.5f, 13f));
+        DrawRect(color, 4.5f, 17f, 8.5f, 19f);
+        DrawCapAndHair(1f, HeadY - 1);
+        DrawEyes(1f, HeadY - 1);
     }
 
     // -- FALL --
 
     private void DrawFall(Color color)
     {
-        DrawHead(color, 0, HeadY);
-        DrawRect(color, -2, -14, 2, -11);                                  // Neck
-        DrawQuad(color, new(-6, -11), new(6, -11),
-                        new(4, 10), new(-4, 10));                          // Torso
+        DrawHead(color, 0.5f, HeadY);
+        DrawQuad(color, new(-1f, -12.5f), new(3f, -12.5f), new(2.5f, -9.5f), new(-0.5f, -9.5f)); // Neck
+        DrawQuad(color, new(-4.2f, -10.5f), new(5f, -10.5f), new(4f, 11f), new(-3.8f, 11f));     // Torso
         // Left arm — out and dangling
-        DrawQuad(color, new(-6, -11), new(-8, -11), new(-12, -6), new(-10, -4));
-        DrawQuad(color, new(-12, -6), new(-10, -4), new(-11, 2), new(-13, 0));
+        DrawQuad(color, new(-4.2f, -10.5f), new(-6.2f, -10.5f), new(-11f, -5.5f), new(-9.2f, -3.5f));
+        DrawQuad(color, new(-11f, -5.5f), new(-9.2f, -3.5f), new(-10f, 2.5f), new(-12f, 0.5f));
         // Right arm — out and dangling
-        DrawQuad(color, new(6, -11), new(8, -11), new(12, -6), new(10, -4));
-        DrawQuad(color, new(12, -6), new(10, -4), new(11, 2), new(13, 0));
+        DrawQuad(color, new(5f, -10.5f), new(7f, -10.5f), new(11.8f, -5.5f), new(10f, -3.5f));
+        DrawQuad(color, new(11.8f, -5.5f), new(10f, -3.5f), new(11f, 2.5f), new(13f, 0.5f));
         // Left leg dangling
-        DrawQuad(color, new(-4, 10), new(-1, 10), new(-3, 20), new(-6, 20));
-        DrawQuad(color, new(-6, 20), new(-3, 20), new(-2, 28), new(-5, 28));
-        DrawRect(color, -6, 26, -1, 28);
+        DrawQuad(color, new(-3.8f, 11f), new(-1f, 11f), new(-2.6f, 20f), new(-5.4f, 20f));
+        DrawQuad(color, new(-5.4f, 20f), new(-2.6f, 20f), new(-1.8f, 28f), new(-4.6f, 28f));
+        DrawRect(color, -5.8f, 26f, -1.2f, 28f);
         // Right leg dangling
-        DrawQuad(color, new(1, 10), new(4, 10), new(6, 20), new(3, 20));
-        DrawQuad(color, new(3, 20), new(6, 20), new(5, 28), new(2, 28));
-        DrawRect(color, 1, 26, 6, 28);
-        DrawEyes(0, HeadY);
+        DrawQuad(color, new(1f, 11f), new(3.8f, 11f), new(5.4f, 20f), new(2.6f, 20f));
+        DrawQuad(color, new(2.6f, 20f), new(5.4f, 20f), new(4.6f, 28f), new(1.8f, 28f));
+        DrawRect(color, 1.2f, 26f, 5.8f, 28f);
+        DrawCapAndHair(0.5f, HeadY);
+        DrawEyes(0.5f, HeadY);
     }
 
     // -- DEATH --
@@ -333,5 +361,8 @@ public partial class PlayerAnimator : Node2D
         // Feet
         DrawRect(color, -10, 26, -5, 28);
         DrawRect(color, 2, 26, 7, 28);
+        // Cap knocked off, lying upside-down behind the body.
+        DrawPoly(CapColor, new(-17f, 28f), new(-15.5f, 24.5f), new(-12.5f, 23.5f),
+                           new(-10f, 25f), new(-9.5f, 28f));
     }
 }

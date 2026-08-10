@@ -48,7 +48,7 @@ Shaders/             — .gdshader files (vignette, fog, silhouette)
 Switches/plates → set `[Export] NodePath[] Targets` → call `Activate()`/`Deactivate()` on resolved IActivatable nodes. All puzzle-to-puzzle communication goes through the IActivatable interface.
 
 ### Visual Style
-Grayscale only. Foreground = black silhouettes. Background = layered grays via ParallaxBackground. Atmosphere = scrolling fog + dust particles + vignette overlay. Rendering uses `gl_compatibility` for broad support.
+Grayscale world with ONE deliberate exception: the player's yellow cap (`CapColor` in PlayerAnimator.cs) is the game's single saturated accent — nothing else may use a saturated hue. Foreground = black silhouettes. Background = layered grays via ParallaxBackground. Atmosphere = scrolling fog + dust particles + vignette overlay. Rendering uses `gl_compatibility` for broad support.
 
 ## Git Conventions
 
